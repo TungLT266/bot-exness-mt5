@@ -23,17 +23,14 @@ double getNewPrice(double priceNew, double limitModifyPrice) {
       double priceChange = priceNew - priceOld;
       if (priceChange > limitModifyPrice) {
          return priceOld + limitModifyPrice;
-      } else {
-         return priceNew;
       }
    } else {
       double priceChange = priceOld - priceNew;
       if (priceChange > limitModifyPrice) {
          return priceOld - limitModifyPrice;
-      } else {
-         return priceNew;
       }
    }
+   return priceNew;
 }
 
 void ModifyStopAction(double bidPrice, double askPrice, ulong deviation,
@@ -56,7 +53,7 @@ void ModifyStopAction(double bidPrice, double askPrice, ulong deviation,
       return;
    }
    
-   price = getNewPrice(price, limitModifyPrice);
+   price = NormalizeDouble(getNewPrice(price, limitModifyPrice), 5);
    
    MqlTradeRequest request;
    MqlTradeResult result;
