@@ -55,10 +55,10 @@ void ModifyStopAction(double bidPrice, double askPrice) {
       return;
    }
    
-   orderPriceNew = NormalizeDouble(getNewPriceWithLimitModify(orderPriceNew), 5);
+   orderPriceNew = getNewPriceWithLimitModify(orderPriceNew);
    
    if (orderPriceNew == orderPriceOld) {
-      Print("ModifyStopAction: No change price.");
+      Print("ModifyStopAction no change price: ", orderTicket, " - Price: ", orderPriceOld);
       return;
    }
    

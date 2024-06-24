@@ -51,9 +51,9 @@ double GetSLNewForSell(double askPrice) {
 void ModifyPositionSL(double bidPrice, double askPrice) {
    double slNew = slOld;
    if (positionType == POSITION_TYPE_BUY) {
-      slNew = NormalizeDouble(GetSLNewForBuy(bidPrice), 5);
+      slNew = GetSLNewForBuy(bidPrice);
    } else if (positionType == POSITION_TYPE_SELL) {
-      slNew = NormalizeDouble(GetSLNewForSell(askPrice), 5);
+      slNew = GetSLNewForSell(askPrice);
    }
    
    if (slNew == slOld) {
