@@ -38,7 +38,7 @@ void CreateOrderStopAction(double bidPrice, double askPrice, ENUM_ORDER_TYPE typ
    
    Print("CreateOrderStopAction ", EnumToString(type), ": Price: ", price, " - SL: ", sl, " - TP: ", tp, " - Volume: ", volumeInput);
    
-   if (!OrderSendAsync(request, result)) {
+   if (!OrderSend(request, result)) {
       Print("CreateOrderStopAction ", EnumToString(type), " Error: ", result.comment);
    }
 }

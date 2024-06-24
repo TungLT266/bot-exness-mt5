@@ -57,6 +57,11 @@ void ModifyStopAction(double bidPrice, double askPrice) {
    
    orderPriceNew = NormalizeDouble(getNewPriceWithLimitModify(orderPriceNew), 5);
    
+   if (orderPriceNew == orderPriceOld) {
+      Print("ModifyStopAction: No change price.");
+      return;
+   }
+   
    MqlTradeRequest request;
    MqlTradeResult result;
 
