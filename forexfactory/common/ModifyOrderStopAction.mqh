@@ -78,7 +78,7 @@ void ModifyStopAction(double bidPrice, double askPrice) {
    Print("ModifyStopAction ", EnumToString(orderType), ": ", orderTicket, " - Price New: ", orderPriceNew,
          " - Price Old: ", orderPriceOld, " - SL: ", slNew, " - TP: ", tpNew);
    
-   if (!OrderSendAsync(request, result)) {
+   if (!OrderSend(request, result)) {
       Print("ModifyStopAction ", EnumToString(orderType), " Error: ", orderTicket, " - Comment: ", result.comment);
    }
 }
