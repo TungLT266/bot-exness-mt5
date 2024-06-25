@@ -23,7 +23,11 @@ void ModifyPositionSLAction(double bidPrice, double askPrice) {
 }
 
 double GetSLNewForBuy(double bidPrice) {
-   if (bidPrice >= (positionPrice + stopPriceSLRateInput)) {
+   if (bidPrice >= (positionPrice + (stopPriceSLRateInput * 3))) {
+      if (slOld < (positionPrice + stopPriceSLRateInput)) {
+         return positionPrice + stopPriceSLRateInput;
+      }
+   } else if (bidPrice >= (positionPrice + stopPriceSLRateInput)) {
       if (slOld < positionPrice) {
          return positionPrice;
       }
@@ -36,7 +40,11 @@ double GetSLNewForBuy(double bidPrice) {
 }
 
 double GetSLNewForSell(double askPrice) {
-   if (askPrice <= (positionPrice - stopPriceSLRateInput)) {
+   if (askPrice <= (positionPrice - (stopPriceSLRateInput * 3))) {
+      if (slOld > (positionPrice - stopPriceSLRateInput)) {
+         return positionPrice - stopPriceSLRateInput;
+      }
+   } else if (askPrice <= (positionPrice - stopPriceSLRateInput)) {
       if (slOld > positionPrice) {
          return positionPrice;
       }
