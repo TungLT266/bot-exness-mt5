@@ -5,7 +5,8 @@ extern double volumeInput;
 extern double stopPriceRateInput;
 extern double stopPriceSLRateInput;
 extern double stopPriceTPRateInput;
-extern double limitModifyPriceInput;
+extern double maxModifyPriceInput;
+extern double minModifyPriceInput;
 
 ulong orderTicket;
 ENUM_ORDER_TYPE orderType;
@@ -25,20 +26,19 @@ void ModifyOrderStopAction(double bidPrice, double askPrice) {
 double getNewPriceWithLimitModify(double priceNew) {
    if (priceNew > orderPriceOld) {
       double priceChange = priceNew - orderPriceOld;
-      if (priceChange > limitModifyPriceInput) {
-         return orderPriceOld + limitModifyPriceInput;
+      if (priceChange > maxModifyPriceInput) {
+         return orderPriceOld + maxModifyPriceInput;
       }
    } else {
       double priceChange = orderPriceOld - priceNew;
-      if (priceChange > limitModifyPriceInput) {
-         return orderPriceOld - limitModifyPriceInput;
+      if (priceChange > maxModifyPriceInput) {
+         return orderPriceOld - maxModifyPriceInput;
       }
    }
    return priceNew;
 }
 
 void ModifyStopAction(double bidPrice, double askPrice) {
-
    double orderPriceNew;
    double slNew;
    double tpNew;
@@ -51,14 +51,14 @@ void ModifyStopAction(double bidPrice, double askPrice) {
       slNew = orderPriceNew + stopPriceSLRateInput;
       tpNew = orderPriceNew - stopPriceTPRateInput;
    } else {
-      Print("Error ModifyStopAction: Type invalid.");
+      Print("Modify Order Error: Type invalid.");
       return;
    }
    
    orderPriceNew = getNewPriceWithLimitModify(orderPriceNew);
    
-   if (orderPriceNew == orderPriceOld) {
-      Print("ModifyStopAction no change price: ", orderTicket, " - Price: ", orderPriceOld);
+   if (MathAbs(orderPriceNew - orderPriceOld) < minModifyPriceInput) {
+      //Print("ModifyStopAction no change price: ", orderTicket, " - Price New: ", orderPriceNew, " - Price Old:", orderPriceOld);
       return;
    }
    
@@ -75,10 +75,10 @@ void ModifyStopAction(double bidPrice, double askPrice) {
    request.order = orderTicket;
    //request.deviation = deviation;
    
-   Print("ModifyStopAction ", EnumToString(orderType), ": ", orderTicket, " - Price New: ", orderPriceNew,
-         " - Price Old: ", orderPriceOld, " - SL: ", slNew, " - TP: ", tpNew);
-   
-   if (!OrderSend(request, result)) {
-      Print("ModifyStopAction ", EnumToString(orderType), " Error: ", orderTicket, " - Comment: ", result.comment);
+   if (OrderSend(request, result)) {
+      Print("Modify Order Success: Type: ", EnumToString(orderType), " - Ticket: ", orderTicket, " - Price New: ", orderPriceNew,
+         " - Price Old: ", orderPriceOld, " - SL New: ", slNew, " - TP New: ", tpNew);
+   } else {
+      Print("Modify Order Error: Type: ", EnumToString(orderType), " - Ticket: ", orderTicket, " - Comment: ", result.comment);
    }
 }

@@ -79,9 +79,9 @@ void ModifyPositionSL(double bidPrice, double askPrice) {
    request.sl = slNew;
    request.tp = tpOld;
    
-   Print("ModifyPositionSL ", EnumToString(positionType), ": ", positionTicket, " - SL New: ", slNew, " - SL Old: ", slOld);
-   
-   if (!OrderSend(request, result)) {
-      Print("Error: ModifyPositionSL ", EnumToString(positionType), ": ", positionTicket, " - Comment: ", result.comment);
+   if (OrderSend(request, result)) {
+      Print("Modify SL Success: Type: ", EnumToString(positionType), " - Ticket: ", positionTicket, " - SL New: ", slNew, " - SL Old: ", slOld);
+   } else {
+      Print("Modify SL Error: Type: ", EnumToString(positionType), " - Ticket: ", positionTicket, " - Comment: ", result.comment);
    }
 }

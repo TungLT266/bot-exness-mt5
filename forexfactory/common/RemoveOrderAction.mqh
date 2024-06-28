@@ -19,9 +19,9 @@ void RemoveFirstOrder() {
    request.action=TRADE_ACTION_REMOVE;
    request.order = ticket;
    
-   Print("RemoveFirstOrder: ", ticket);
-   
-   if (!OrderSend(request, result)) {
-      Print("RemoveFirstOrder Error: ", ticket, " - ", result.comment);
+   if (OrderSend(request, result)) {
+      Print("Remove Order Success: Ticket: ", ticket);
+   } else {
+      Print("Remove Order Error: Ticket: ", ticket, " - Comment: ", result.comment);
    }
 }

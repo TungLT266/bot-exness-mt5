@@ -19,7 +19,7 @@ void CreateOrderStopAction(double bidPrice, double askPrice, ENUM_ORDER_TYPE typ
       sl = price + stopPriceSLRateInput;
       tp = price - stopPriceTPRateInput;
    } else {
-      Print("Error CreateOrderStopAction: Type invalid.");
+      Print("Create Order Error: Type invalid.");
       return;
    }
    
@@ -36,9 +36,9 @@ void CreateOrderStopAction(double bidPrice, double askPrice, ENUM_ORDER_TYPE typ
    request.tp = tp;
    //request.deviation = deviation;
    
-   Print("CreateOrderStopAction ", EnumToString(type), ": Price: ", price, " - SL: ", sl, " - TP: ", tp, " - Volume: ", volumeInput);
-   
-   if (!OrderSend(request, result)) {
-      Print("CreateOrderStopAction ", EnumToString(type), " Error: ", result.comment);
+   if (OrderSend(request, result)) {
+      Print("Create Order Success: Type: ", EnumToString(type), " - Ticket: ", result.order, " - Price: ", price, " - SL: ", sl, " - TP: ", tp);
+   } else {
+      Print("Create Order Error: Type: ", EnumToString(type), " - Comment: ", result.comment);
    }
 }
