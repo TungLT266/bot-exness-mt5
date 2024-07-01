@@ -4,7 +4,7 @@
 #include <C:\Users\admin\AppData\Roaming\MetaQuotes\Terminal\53785E099C927DB68A545C249CDBCE06\MQL5\Experts\bot-ea\grid-bot\common\CommonFunction.mqh>
 
 extern int gridNumberInput;
-extern double gridStartInput;
+extern double gridStartGlobal;
 extern double gridSLInput;
 extern double volumeInput;
 extern double gridAmountInput;
@@ -43,7 +43,7 @@ bool isExistGridNumber(int gridNumber) {
    return false;
 }
 
-void createOrder(double gridNumber) {
+void createOrder(int gridNumber) {
    double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
    double price = GetPriceByGridNumber(gridNumber);
    double sl;
@@ -59,7 +59,7 @@ void createOrder(double gridNumber) {
          type = ORDER_TYPE_SELL_STOP;
       }
    } else {
-      sl = gridStartInput - gridSLInput;
+      sl = gridStartGlobal - gridSLInput;
       tp = price + gridAmountInput;
       if (price < bidPrice) {
          type = ORDER_TYPE_BUY_LIMIT;
@@ -79,6 +79,7 @@ void createOrder(double gridNumber) {
    request.price = price;
    request.sl = sl;
    request.tp = tp;
+   request.comment = "Grid No." + IntegerToString(gridNumber);
    
    if (OrderSend(request, result)) {
       Print("Create Order Success: Type: ", EnumToString(type), " - Ticket: ", result.order, " - Grid Number: ", gridNumber, " - Price: ", price, " - SL: ", sl, " - TP: ", tp);
