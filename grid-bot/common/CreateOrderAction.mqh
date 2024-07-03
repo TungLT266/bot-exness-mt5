@@ -3,16 +3,28 @@
 
 #include <C:\Users\admin\AppData\Roaming\MetaQuotes\Terminal\53785E099C927DB68A545C249CDBCE06\MQL5\Experts\bot-ea\grid-bot\common\CommonFunction.mqh>
 
-extern int gridNumberInput;
-extern double gridStartGlobal;
+extern int gridBuyNumberInput;
+extern int gridSellNumberInput;
 extern double gridSLInput;
 extern double volumeInput;
 extern double gridAmountInput;
 
+extern int gridTotalGlobal;
+extern double gridStartGlobal;
+
+string typeBuyStr = "BUY";
+string typeSellStr = "SELL";
+
 void CreateOrderAction() {
-   for (int i = 1; i <= gridNumberInput; i++) {
+   for (int i = 1; i <= gridBuyNumberInput; i++) {
       if (!isExistGridNumber(i)) {
-         createOrder(i);
+         createOrder(i, typeBuyStr);
+      }
+   }
+   
+   for (int i = (gridBuyNumberInput + 1); i <= gridTotalGlobal; i++) {
+      if (!isExistGridNumber(i)) {
+         createOrder(i, typeSellStr);
       }
    }
 }
@@ -26,7 +38,6 @@ bool isExistGridNumber(int gridNumber) {
    for (int i = 0; i < totalOrder; i++) {
       ulong orderTicket = OrderGetTicket(i);
       double orderPrice = OrderGetDouble(ORDER_PRICE_OPEN);
-      
       if (orderPrice > minPrice && orderPrice < maxPrice) {
          return true;
       }
@@ -43,15 +54,16 @@ bool isExistGridNumber(int gridNumber) {
    return false;
 }
 
-void createOrder(int gridNumber) {
+void createOrder(int gridNumber, string typeStr) {
    double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
    double price = GetPriceByGridNumber(gridNumber);
    double sl;
    double tp;
    ENUM_ORDER_TYPE type;
    
-   if (gridNumber > (gridNumberInput / 2)) {
-      sl = GetPriceByGridNumber(gridNumberInput) + gridSLInput;
+   if (typeStr == typeSellStr) {
+      sl = GetPriceByGridNumber(gridTotalGlobal) + gridSLInput;
       tp = price - gridAmountInput;
       if (price > bidPrice) {
          type = ORDER_TYPE_SELL_LIMIT;
@@ -61,7 +73,7 @@ void createOrder(int gridNumber) {
    } else {
       sl = gridStartGlobal - gridSLInput;
       tp = price + gridAmountInput;
-      if (price < bidPrice) {
+      if (price < askPrice) {
          type = ORDER_TYPE_BUY_LIMIT;
       } else {
          type = ORDER_TYPE_BUY_STOP;
@@ -77,7 +89,9 @@ void createOrder(int gridNumber) {
    request.volume = volumeInput;
    request.type = type;
    request.price = price;
-   request.sl = sl;
+   if (gridSLInput > 0) {
+      request.sl = sl;
+   }
    request.tp = tp;
    request.comment = "Grid No." + IntegerToString(gridNumber);
    

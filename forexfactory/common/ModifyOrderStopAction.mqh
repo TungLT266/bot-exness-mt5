@@ -7,6 +7,7 @@ extern double stopPriceSLRateInput;
 extern double stopPriceTPRateInput;
 extern double maxModifyPriceInput;
 extern double minModifyPriceInput;
+extern ulong deviationInput;
 
 ulong orderTicket;
 ENUM_ORDER_TYPE orderType;
@@ -73,7 +74,7 @@ void ModifyStopAction(double bidPrice, double askPrice) {
    request.sl = slNew;
    request.tp = tpNew;
    request.order = orderTicket;
-   //request.deviation = deviation;
+   request.deviation = deviationInput;
    
    if (OrderSend(request, result)) {
       Print("Modify Order Success: Type: ", EnumToString(orderType), " - Ticket: ", orderTicket, " - Price New: ", orderPriceNew,

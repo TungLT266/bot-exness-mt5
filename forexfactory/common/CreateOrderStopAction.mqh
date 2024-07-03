@@ -5,6 +5,7 @@ extern double volumeInput;
 extern double stopPriceRateInput;
 extern double stopPriceSLRateInput;
 extern double stopPriceTPRateInput;
+extern ulong deviationInput;
 
 void CreateOrderStopAction(double bidPrice, double askPrice, ENUM_ORDER_TYPE type) {
    double price;
@@ -34,7 +35,7 @@ void CreateOrderStopAction(double bidPrice, double askPrice, ENUM_ORDER_TYPE typ
    request.price = price;
    request.sl = sl;
    request.tp = tp;
-   //request.deviation = deviation;
+   request.deviation = deviationInput;
    
    if (OrderSend(request, result)) {
       Print("Create Order Success: Type: ", EnumToString(type), " - Ticket: ", result.order, " - Price: ", price, " - SL: ", sl, " - TP: ", tp);
