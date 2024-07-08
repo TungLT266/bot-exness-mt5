@@ -13,7 +13,7 @@ void SetPriceStartAndIsTradeBuyFirst()
    double priceStartNew = 0;
    bool isTradeBuyFirstNew = isTradeBuyFirstInput;
 
-   int totalPosition = GetTotalPosition();
+   int totalPosition = PositionsTotal();
    for (int i = 0; i < totalPosition; i++)
    {
       ulong positionTicket = PositionGetTicket(i);
