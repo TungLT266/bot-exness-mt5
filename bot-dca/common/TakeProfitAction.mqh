@@ -5,6 +5,7 @@
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/bot-dca/common/CommonFunction.mqh>
 
 extern ulong magicNumberInput;
+extern int limitGridInput;
 
 extern double priceStartGlobal;
 extern bool isTakeProfitBuyGlobal;
@@ -18,6 +19,14 @@ void TakeProfitAction()
       {
          CloseAllPosition();
       }
+
+      if (GetTotalPosition() >= limitGridInput)
+      {
+         if (bidPrice <= GetSL())
+         {
+            CloseAllPosition();
+         }
+      }
    }
    else
    {
@@ -25,6 +34,14 @@ void TakeProfitAction()
       if (askPrice <= GetTP())
       {
          CloseAllPosition();
+      }
+
+      if (GetTotalPosition() >= limitGridInput)
+      {
+         if (askPrice >= GetSL())
+         {
+            CloseAllPosition();
+         }
       }
    }
 }

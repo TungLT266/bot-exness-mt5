@@ -3,6 +3,7 @@
 
 extern ulong magicNumberInput;
 extern double slAmountInput;
+extern int tpNumberFirstInput;
 extern int tpNumberInput;
 
 extern double priceStartGlobal;
@@ -104,7 +105,7 @@ double GetTP()
     {
         if (GetTotalPosition() == 1)
         {
-            return priceStartGlobal + slAmountInput;
+            return priceStartGlobal + (slAmountInput * tpNumberFirstInput);
         }
         else if (isTakeProfitBuyGlobal)
         {
@@ -116,7 +117,7 @@ double GetTP()
     {
         if (GetTotalPosition() == 1)
         {
-            return priceStartGlobal - slAmountInput;
+            return priceStartGlobal - (slAmountInput * tpNumberFirstInput);
         }
         else if (isTakeProfitBuyGlobal)
         {
