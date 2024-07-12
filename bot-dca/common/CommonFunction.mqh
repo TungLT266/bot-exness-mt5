@@ -81,7 +81,7 @@ int GetTotalOrder()
     for (int i = 0; i < totalOrder; i++)
     {
         ulong ticket = OrderGetTicket(i);
-        ulong magic = PositionGetInteger(POSITION_MAGIC);
+        ulong magic = OrderGetInteger(ORDER_MAGIC);
         if (magic == magicNumberInput)
         {
             result++;

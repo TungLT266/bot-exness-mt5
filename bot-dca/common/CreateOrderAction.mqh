@@ -36,11 +36,11 @@ void CreateOrderAfterFirst()
       {
          if (isTakeProfitBuyGlobal)
          {
-            CreateOrder(GetTotalPosition() + 1, SELL_TYPE_CONSTANT);
+            CreateOrder(totalPosition + 1, SELL_TYPE_CONSTANT);
          }
          else
          {
-            CreateOrder(GetTotalPosition() + 1, BUY_TYPE_CONSTANT);
+            CreateOrder(totalPosition + 1, BUY_TYPE_CONSTANT);
          }
       }
    }
