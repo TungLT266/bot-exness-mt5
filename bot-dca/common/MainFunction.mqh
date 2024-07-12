@@ -47,6 +47,7 @@ void MainFunction()
         {
             Print("Stop bot.");
             ExpertRemove();
+            return;
         }
     }
 
