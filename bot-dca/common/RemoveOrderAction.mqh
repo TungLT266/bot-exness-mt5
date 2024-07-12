@@ -16,7 +16,11 @@ void RemoveOrderAll()
    for (int i = 0; i < total; i++)
    {
       ulong orderTicket = OrderGetTicket(0);
-      RemoveOrderByTicket(orderTicket);
+      ulong magic = OrderGetInteger(ORDER_MAGIC);
+      if (magic == magicNumberInput)
+      {
+         RemoveOrderByTicket(orderTicket);
+      }
    }
 }
 
