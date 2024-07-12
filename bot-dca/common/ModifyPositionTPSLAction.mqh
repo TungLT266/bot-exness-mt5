@@ -27,11 +27,9 @@ void ModifyPositionTPSLAction()
          double tp = PositionGetDouble(POSITION_TP);
          double sl = PositionGetDouble(POSITION_SL);
 
-         bool isSameDirectionWithTakeProfit = IsSameDirectionWithTakeProfit(type);
-
          if (totalPositionMagic >= limitGridInput)
          {
-            if (isSameDirectionWithTakeProfit)
+            if (IsSameDirectionWithTakeProfit(type))
             {
                if (compareDouble(tp, tpNew) != 0 || compareDouble(sl, slNew) != 0)
                {
@@ -48,7 +46,7 @@ void ModifyPositionTPSLAction()
          }
          else
          {
-            if (isSameDirectionWithTakeProfit)
+            if (IsSameDirectionWithTakeProfit(type))
             {
                if (compareDouble(tp, tpNew) != 0 || compareDouble(sl, 0) != 0)
                {
