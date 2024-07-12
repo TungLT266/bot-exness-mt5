@@ -55,6 +55,25 @@ int GetTotalPosition()
     return result;
 }
 
+// if value1 > value2 -> return 1
+// if value1 = value2 -> return 0
+// if value1 < value2 -> return -1
+int compareDouble(double value1, double value2)
+{
+    int value1Int = (int)MathRound(value1 * 100000);
+    int value2Int = (int)MathRound(value2 * 100000);
+
+    if (value1Int > value2Int)
+    {
+        return 1;
+    }
+    else if (value1Int < value2Int)
+    {
+        return -1;
+    }
+    return 0;
+}
+
 int GetTotalOrder()
 {
     int result = 0;

@@ -33,14 +33,14 @@ void ModifyPositionTPSLAction()
          {
             if (isSameDirectionWithTakeProfit)
             {
-               if (tp != tpNew || sl != slNew)
+               if (compareDouble(tp, tpNew) != 0 || compareDouble(sl, slNew) != 0)
                {
                   ModifyPositionTPSL(positionTicket, tpNew, slNew, type);
                }
             }
             else
             {
-               if (tp != slNew || sl != tpNew)
+               if (compareDouble(tp, slNew) != 0 || compareDouble(sl, tpNew) != 0)
                {
                   ModifyPositionTPSL(positionTicket, slNew, tpNew, type);
                }
@@ -50,14 +50,14 @@ void ModifyPositionTPSLAction()
          {
             if (isSameDirectionWithTakeProfit)
             {
-               if (tp != tpNew || sl != 0)
+               if (compareDouble(tp, tpNew) != 0 || compareDouble(sl, 0) != 0)
                {
                   ModifyPositionTPSL(positionTicket, tpNew, 0, type);
                }
             }
             else
             {
-               if (tp != 0 || sl != tpNew)
+               if (compareDouble(tp, 0) != 0 || compareDouble(sl, tpNew) != 0)
                {
                   ModifyPositionTPSL(positionTicket, 0, tpNew, type);
                }

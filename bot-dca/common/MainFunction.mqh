@@ -33,6 +33,8 @@ int OnInitFunction()
 
     MainFunction();
 
+    isHasRunOnceGlobal = true;
+
     EventSetTimer(DELAY_SECOND_CONSTANT);
 
     return (INIT_SUCCEEDED);
@@ -57,8 +59,6 @@ void MainFunction()
     RefreshGlobalVariable();
     ModifyPositionTPSLAction();
     TakeProfitAction();
-
-    isHasRunOnceGlobal = true;
 }
 
 void RefreshGlobalVariable()
