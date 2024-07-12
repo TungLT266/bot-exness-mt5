@@ -27,33 +27,59 @@ void ModifyPositionTPSLAction()
          double tp = PositionGetDouble(POSITION_TP);
          double sl = PositionGetDouble(POSITION_SL);
 
-         if (type == POSITION_TYPE_BUY)
+         bool isSameDirectionWithTakeProfit = IsSameDirectionWithTakeProfit(type);
+
+         if (totalPositionMagic >= limitGridInput)
          {
-            if (isTakeProfitBuyGlobal && tp != tpNew)
+            if (isSameDirectionWithTakeProfit)
             {
-               ModifyPositionTP(positionTicket, tpNew, type);
+               if (tp != tpNew || sl != slNew)
+               {
+                  ModifyPositionTPSL(positionTicket, tpNew, slNew, type);
+               }
+            }
+            else
+            {
+               if (tp != slNew || sl != tpNew)
+               {
+                  ModifyPositionTPSL(positionTicket, slNew, tpNew, type);
+               }
             }
          }
          else
          {
-            if (!isTakeProfitBuyGlobal && tp != tpNew)
+            if (isSameDirectionWithTakeProfit)
             {
-               ModifyPositionTP(positionTicket, tpNew, type);
+               if (tp != tpNew || sl != 0)
+               {
+                  ModifyPositionTPSL(positionTicket, tpNew, 0, type);
+               }
             }
-         }
-
-         if (totalPositionMagic >= limitGridInput)
-         {
-            if (sl != slNew)
+            else
             {
-               ModifyPositionSL(positionTicket, slNew, type);
+               if (tp != 0 || sl != tpNew)
+               {
+                  ModifyPositionTPSL(positionTicket, 0, tpNew, type);
+               }
             }
          }
       }
    }
 }
 
-void ModifyPositionTP(ulong ticket, double tpNew, ENUM_POSITION_TYPE positionType)
+bool IsSameDirectionWithTakeProfit(ENUM_POSITION_TYPE type)
+{
+   if (isTakeProfitBuyGlobal)
+   {
+      return type == POSITION_TYPE_BUY;
+   }
+   else
+   {
+      return type == POSITION_TYPE_SELL;
+   }
+}
+
+void ModifyPositionTPSL(ulong ticket, double tpNew, double slNew, ENUM_POSITION_TYPE positionType)
 {
    if (tpNew > 0)
    {
@@ -61,7 +87,7 @@ void ModifyPositionTP(ulong ticket, double tpNew, ENUM_POSITION_TYPE positionTyp
       {
          if (tpNew <= SymbolInfoDouble(_Symbol, SYMBOL_BID))
          {
-            Print("Modify Position TP failure: Ticket: ", ticket, " - TP: ", tpNew);
+            Print("Modify Position TPSL failure: Ticket: ", ticket, " - TP: ", tpNew);
             return;
          }
       }
@@ -69,7 +95,27 @@ void ModifyPositionTP(ulong ticket, double tpNew, ENUM_POSITION_TYPE positionTyp
       {
          if (tpNew >= SymbolInfoDouble(_Symbol, SYMBOL_ASK))
          {
-            Print("Modify Position TP failure: Ticket: ", ticket, " - TP: ", tpNew);
+            Print("Modify Position TPSL failure: Ticket: ", ticket, " - TP: ", tpNew);
+            return;
+         }
+      }
+   }
+
+   if (slNew > 0)
+   {
+      if (positionType == POSITION_TYPE_BUY)
+      {
+         if (slNew >= SymbolInfoDouble(_Symbol, SYMBOL_BID))
+         {
+            Print("Modify Position TPSL failure: Ticket: ", ticket, " - SL: ", slNew);
+            return;
+         }
+      }
+      else
+      {
+         if (slNew <= SymbolInfoDouble(_Symbol, SYMBOL_ASK))
+         {
+            Print("Modify Position TPSL failure: Ticket: ", ticket, " - SL: ", slNew);
             return;
          }
       }
@@ -84,55 +130,14 @@ void ModifyPositionTP(ulong ticket, double tpNew, ENUM_POSITION_TYPE positionTyp
    request.position = ticket;
    request.symbol = _Symbol;
    request.tp = tpNew;
-
-   if (OrderSend(request, result))
-   {
-      Print("Modify Position TP success: Ticket: ", ticket, " - TP: ", tpNew);
-   }
-   else
-   {
-      Print("Modify Position TP failure: Ticket: ", ticket, " - TP: ", tpNew, " - Comment: ", result.comment);
-   }
-}
-
-void ModifyPositionSL(ulong ticket, double slNew, ENUM_POSITION_TYPE positionType)
-{
-   if (slNew > 0)
-   {
-      if (positionType == POSITION_TYPE_BUY)
-      {
-         if (slNew >= SymbolInfoDouble(_Symbol, SYMBOL_BID))
-         {
-            Print("Modify Position SL failure: Ticket: ", ticket, " - SL: ", slNew);
-            return;
-         }
-      }
-      else
-      {
-         if (slNew <= SymbolInfoDouble(_Symbol, SYMBOL_ASK))
-         {
-            Print("Modify Position SL failure: Ticket: ", ticket, " - SL: ", slNew);
-            return;
-         }
-      }
-   }
-
-   MqlTradeRequest request;
-   MqlTradeResult result;
-
-   ZeroMemory(request);
-   ZeroMemory(result);
-   request.action = TRADE_ACTION_SLTP;
-   request.position = ticket;
-   request.symbol = _Symbol;
    request.sl = slNew;
 
    if (OrderSend(request, result))
    {
-      Print("Modify Position SL success: Ticket: ", ticket, " - SL: ", slNew);
+      Print("Modify Position TPSL success: Ticket: ", ticket, " - TP: ", tpNew, " - SL: ", slNew);
    }
    else
    {
-      Print("Modify Position SL failure: Ticket: ", ticket, " - SL: ", slNew, " - Comment: ", result.comment);
+      Print("Modify Position TPSL failure: Ticket: ", ticket, " - TP: ", tpNew, " - SL: ", slNew, " - Comment: ", result.comment);
    }
 }
