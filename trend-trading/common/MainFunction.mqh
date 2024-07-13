@@ -4,17 +4,17 @@
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading/common/CommonFunction.mqh>
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading/common/CreateOrderAction.mqh>
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading/common/RemoveOrderAction.mqh>
+#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading/common/CreateValueGlobal.mqh>
 
 // Input
-extern int gridTotalInput;
+extern int totalOrderInput;
 extern double volumeInput;
 extern double gridAmountInput;
 extern int limitPositionInput;
 extern ulong magicNumberInput;
 
 // Global
-double numberStartGridGlobal = 0;
-double priceStartGridGlobal = 0;
+int gridNoCurrentGlobal = 0;
 int differenceBuyAndSellGlobal = 0; // Nếu value > 0 => Buy > Sell
 
 // Constants
@@ -26,7 +26,7 @@ int OnInitFunction()
 {
     // RemoveOrderAll();
 
-    if (gridTotalInput % 2 != 0)
+    if (totalOrderInput % 2 != 0)
     {
         Print("Grid total invalid.");
         ExpertRemove();
@@ -44,32 +44,28 @@ int OnInitFunction()
 
 void MainFunction()
 {
-    double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-    double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-    double startByBid = GetNumberStartGrid(bidPrice);
-    double startByAsk = GetNumberStartGrid(askPrice);
-    if (startByBid != startByAsk)
+    int gridNoCurrentNew = GetGridNoCurrent();
+    if (gridNoCurrentNew <= 0)
     {
         return;
     }
-
-    numberStartGridGlobal = startByBid;
-    priceStartGridGlobal = numberStartGridGlobal * gridAmountInput;
-
-    int totalPosition = PositionsTotal();
-    if (totalPosition > 0)
+    if (gridNoCurrentGlobal != gridNoCurrentNew)
     {
-        int totalPositionBuy = GetTotalPositionBuy();
-        int totalPositionSell = GetTotalPositionSell();
-
-        int differenceBuyAndSellNew = totalPositionBuy - totalPositionSell;
-        if (differenceBuyAndSellNew != differenceBuyAndSellGlobal)
-        {
-            differenceBuyAndSellGlobal = differenceBuyAndSellNew;
-            Print("Total lệnh: ", totalPosition, " - Lệnh Buy: ", totalPositionBuy, " - Lệnh Sell: ", totalPositionSell);
-        }
+        gridNoCurrentGlobal = gridNoCurrentNew;
+        Print("Grid no current: ", gridNoCurrentGlobal);
     }
 
+    RefreshGlobalVariable();
     RemoveOrderAction();
     CreateOrderAction();
+}
+
+void RefreshGlobalVariable()
+{
+    int differenceBuyAndSellNew = GetDifferenceBuyAndSell();
+    if (differenceBuyAndSellNew != differenceBuyAndSellGlobal)
+    {
+        differenceBuyAndSellGlobal = differenceBuyAndSellNew;
+        Print("Difference Buy and Sell: ", differenceBuyAndSellGlobal);
+    }
 }

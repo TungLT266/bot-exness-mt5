@@ -1,56 +1,37 @@
 #property copyright "Copyright 2024, MetaQuotes Ltd."
 #property link "https://www.mql5.com"
 
-#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/BB16F565FAAA6B23A20C26C49416FF05/MQL5/Experts/bot-xm-mt5/trend-trading/common/CommonFunction.mqh>
+#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading/common/CommonFunction.mqh>
 
+extern int totalOrderInput;
 extern double gridAmountInput;
-extern int gridTotalInput;
+extern ulong magicNumberInput;
 extern int limitPositionInput;
 
-extern double priceStartGridGlobal;
+extern int gridNoCurrentGlobal;
+
+extern string BUY_TYPE_CONSTANT;
+extern string SELL_TYPE_CONSTANT;
 
 void RemoveOrderAction()
 {
-   double minGrid = priceStartGridGlobal - (gridAmountInput / 2);
-   double maxGrid = GetPriceByGridNumber(gridTotalInput) + (gridAmountInput / 2);
-
-   if (PositionsTotal() > limitPositionInput)
-   {
-      if (differenceBuyAndSellGlobal > 0)
-      {
-         maxGrid = GetPriceByGridNumber(gridTotalInput / 2) + (gridAmountInput / 2);
-      }
-      else if (differenceBuyAndSellGlobal < 0)
-      {
-         minGrid = GetPriceByGridNumber((gridTotalInput / 2) + 1) - (gridAmountInput / 2);
-      }
-      else
-      {
-         RemoveOrderAll();
-         return;
-      }
-   }
+   int gridNoStart = GetGridNoStart();
+   int gridNoEnd = GetGridNoEnd();
 
    int total = OrdersTotal();
    for (int i = 0; i < total; i++)
    {
       ulong orderTicket = OrderGetTicket(i);
-      double orderPrice = OrderGetDouble(ORDER_PRICE_OPEN);
-      if (orderPrice < minGrid || orderPrice > maxGrid)
+      ulong magic = OrderGetInteger(ORDER_MAGIC);
+      if (magic == magicNumberInput)
       {
-         RemoveOrderByTicket(orderTicket);
-         total--;
+         string comment = OrderGetString(ORDER_COMMENT);
+         int gridNo = (int)StringToInteger(comment);
+         if (gridNo < (gridNoStart) || gridNo > gridNoEnd)
+         {
+            RemoveOrderByTicket(orderTicket);
+         }
       }
-   }
-}
-
-void RemoveOrderAll()
-{
-   int total = OrdersTotal();
-   for (int i = 0; i < total; i++)
-   {
-      ulong orderTicket = OrderGetTicket(0);
-      RemoveOrderByTicket(orderTicket);
    }
 }
 

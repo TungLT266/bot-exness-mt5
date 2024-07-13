@@ -1,62 +1,42 @@
 #property copyright "Copyright 2024, MetaQuotes Ltd."
 #property link "https://www.mql5.com"
 
-#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/BB16F565FAAA6B23A20C26C49416FF05/MQL5/Experts/bot-xm-mt5/trend-trading/common/CommonFunction.mqh>
-#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/BB16F565FAAA6B23A20C26C49416FF05/MQL5/Experts/bot-xm-mt5/trend-trading/common/RemoveOrderAction.mqh>
+#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading/common/CommonFunction.mqh>
 
-extern int gridTotalInput;
+extern int totalOrderInput;
 extern double volumeInput;
 extern double gridAmountInput;
+extern ulong magicNumberInput;
+
+extern int gridNoCurrentGlobal;
+
+extern string BUY_TYPE_CONSTANT;
+extern string SELL_TYPE_CONSTANT;
 
 void CreateOrderAction()
 {
-   int start = 1;
-   int end = gridTotalInput;
-
-   if (PositionsTotal() > limitPositionInput)
+   for (int i = GetGridNoStart(); i <= GetGridNoEnd(); i++)
    {
-      if (differenceBuyAndSellGlobal > 0)
+      if (!IsExistGridNo(i))
       {
-         end = gridTotalInput / 2;
+         CreateOrder(i);
       }
-      else if (differenceBuyAndSellGlobal < 0)
-      {
-         start = (gridTotalInput / 2) + 1;
-      }
-      else
-      {
-         return;
-      }
-   }
-
-   for (int i = start; i <= end; i++)
-   {
-      createOrder(i);
    }
 }
 
-bool isExistGridNumber(int gridNumber, ENUM_ORDER_TYPE type)
+bool IsExistGridNo(int gridNo)
 {
-   double price = GetPriceByGridNumber(gridNumber);
-   double minPrice = price - (gridAmountInput / 2);
-   double maxPrice = price + (gridAmountInput / 2);
-
    int totalOrder = OrdersTotal();
    for (int i = 0; i < totalOrder; i++)
    {
       ulong orderTicket = OrderGetTicket(i);
-      double orderPrice = OrderGetDouble(ORDER_PRICE_OPEN);
-      if (orderPrice > minPrice && orderPrice < maxPrice)
+      ulong magic = OrderGetInteger(ORDER_MAGIC);
+      if (magic == magicNumberInput)
       {
-         ENUM_ORDER_TYPE orderType = (ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);
-         if (orderType == type)
+         string comment = OrderGetString(ORDER_COMMENT);
+         if (gridNo == StringToInteger(comment))
          {
             return true;
-         }
-         else
-         {
-            RemoveOrderByTicket(orderTicket);
-            totalOrder--;
          }
       }
    }
@@ -65,66 +45,56 @@ bool isExistGridNumber(int gridNumber, ENUM_ORDER_TYPE type)
    for (int i = 0; i < totalPosition; i++)
    {
       ulong positionTicket = PositionGetTicket(i);
-      double positionPrice = PositionGetDouble(POSITION_PRICE_OPEN);
-      if (positionPrice > minPrice && positionPrice < maxPrice)
+      ulong magic = PositionGetInteger(POSITION_MAGIC);
+      if (magic == magicNumberInput)
       {
-         return true;
+         string comment = PositionGetString(POSITION_COMMENT);
+         if (gridNo == StringToInteger(comment))
+         {
+            return true;
+         }
       }
    }
    return false;
 }
 
-void createOrder(int gridNo)
+void CreateOrder(int gridNo)
 {
-   double price = GetPriceByGridNumber(gridNo);
+   double price = GetPriceByGridNo(gridNo);
    double tp;
    ENUM_ORDER_TYPE type;
 
-   if (gridNo > (gridTotalInput / 2))
+   double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+
+   string typeStr = GetTypeOrderByGridNo(gridNo);
+   if (typeStr == BUY_TYPE_CONSTANT)
    {
-      type = ORDER_TYPE_BUY_STOP;
       tp = price + gridAmountInput;
-      if (differenceBuyAndSellGlobal > 0)
+      if (price > askPrice)
       {
-         if (gridNo <= (gridTotalInput / 2) + differenceBuyAndSellGlobal + 1)
-         {
-            type = ORDER_TYPE_SELL_LIMIT;
-            tp = price - gridAmountInput;
-         }
+         type = ORDER_TYPE_BUY_STOP;
+      }
+      else
+      {
+         type = ORDER_TYPE_BUY_LIMIT;
+      }
+   }
+   else if (typeStr == SELL_TYPE_CONSTANT)
+   {
+      tp = price - gridAmountInput;
+      if (price < bidPrice)
+      {
+         type = ORDER_TYPE_SELL_STOP;
+      }
+      else
+      {
+         type = ORDER_TYPE_SELL_LIMIT;
       }
    }
    else
    {
-      type = ORDER_TYPE_SELL_STOP;
-      tp = price - gridAmountInput;
-      if (differenceBuyAndSellGlobal < 0)
-      {
-         if (gridNo > (gridTotalInput / 2) + differenceBuyAndSellGlobal - 1)
-         {
-            type = ORDER_TYPE_BUY_LIMIT;
-            tp = price + gridAmountInput;
-         }
-      }
-   }
-
-   if (isExistGridNumber(gridNo, type))
-   {
-      return;
-   }
-
-   double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-   double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-   if (type == ORDER_TYPE_SELL_LIMIT || type == ORDER_TYPE_BUY_LIMIT)
-   {
-      if (price >= bidPrice && price <= askPrice)
-      {
-         Print("Create order failure.");
-         return;
-      }
-   }
-   else if (price >= (bidPrice - (gridAmountInput / 2)) && price <= (askPrice + (gridAmountInput / 2)))
-   {
-      Print("Create order failure.");
+      Print("Create order failure: Type invalid.");
       return;
    }
 
@@ -138,7 +108,7 @@ void createOrder(int gridNo)
    request.type = type;
    request.price = price;
    request.tp = tp;
-   request.comment = GetCommentByGridNo(gridNo, type);
+   request.comment = IntegerToString(gridNo);
 
    if (OrderSend(request, result))
    {
