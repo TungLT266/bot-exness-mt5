@@ -98,74 +98,30 @@ string GetTypeOrderStrByType(ENUM_ORDER_TYPE type)
 
 string GetTypeOrderByGridNo(int gridNo)
 {
-   int halfTotalOrder = totalOrderInput / 2;
-   int numberOrderBuyTop = halfTotalOrder;
-   int numberOrderSellTop = halfTotalOrder;
-   int numberOrderBuyLimit = 0;
-   int numberOrderSellLimit = 0;
-
-   if (differenceBuyAndSellGlobal > 0)
-   {
-      if (differenceBuyAndSellGlobal >= halfTotalOrder)
-      {
-         numberOrderSellLimit = halfTotalOrder;
-         numberOrderBuyTop = 0;
-      }
-      else
-      {
-         numberOrderSellLimit = differenceBuyAndSellGlobal;
-         numberOrderBuyTop = halfTotalOrder - differenceBuyAndSellGlobal;
-      }
-   }
-   else if (differenceBuyAndSellGlobal < 0)
-   {
-      if (MathAbs(differenceBuyAndSellGlobal) >= halfTotalOrder)
-      {
-         numberOrderBuyLimit = halfTotalOrder;
-         numberOrderSellTop = 0;
-      }
-      else
-      {
-         numberOrderBuyLimit = MathAbs(differenceBuyAndSellGlobal);
-         numberOrderSellTop = halfTotalOrder - MathAbs(differenceBuyAndSellGlobal);
-      }
-   }
-
-   if (numberOrderBuyTop > 0)
-   {
-      int start = gridNoCurrentGlobal + numberOrderSellLimit + 1;
-      int end = gridNoCurrentGlobal + numberOrderSellLimit + numberOrderBuyTop;
-      if (gridNo >= start && gridNo <= end)
-      {
-         return BUY_TYPE_CONSTANT;
-      }
-   }
-   if (numberOrderSellLimit > 0)
+   if (gridNo > gridNoCurrentGlobal)
    {
       int start = gridNoCurrentGlobal + 1;
-      int end = gridNoCurrentGlobal + numberOrderSellLimit;
+      int end = gridNoCurrentGlobal + differenceBuyAndSellGlobal;
       if (gridNo >= start && gridNo <= end)
       {
          return SELL_TYPE_CONSTANT;
       }
+      else
+      {
+         return BUY_TYPE_CONSTANT;
+      }
    }
-   if (numberOrderBuyLimit > 0)
+   else
    {
-      int start = gridNoCurrentGlobal - numberOrderBuyLimit + 1;
+      int start = gridNoCurrentGlobal + differenceBuyAndSellGlobal + 1;
       int end = gridNoCurrentGlobal;
       if (gridNo >= start && gridNo <= end)
       {
          return BUY_TYPE_CONSTANT;
       }
-   }
-   if (numberOrderSellTop > 0)
-   {
-      int start = gridNoCurrentGlobal - numberOrderBuyLimit - numberOrderSellTop + 1;
-      int end = gridNoCurrentGlobal - numberOrderBuyLimit;
-      if (gridNo >= start && gridNo <= end)
+      else
       {
          return SELL_TYPE_CONSTANT;
       }
    }
-   return "";
 }
