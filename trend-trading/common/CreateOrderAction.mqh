@@ -109,6 +109,7 @@ void CreateOrder(int gridNo)
    request.price = price;
    request.tp = tp;
    request.comment = IntegerToString(gridNo);
+   request.magic = magicNumberInput;
 
    if (OrderSend(request, result))
    {
