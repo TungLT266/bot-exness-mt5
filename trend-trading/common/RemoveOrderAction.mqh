@@ -18,8 +18,7 @@ void RemoveOrderAction()
    int gridNoStart = GetGridNoStart();
    int gridNoEnd = GetGridNoEnd();
 
-   int total = OrdersTotal();
-   for (int i = total - 1; i >= 0; i--)
+   for (int i = OrdersTotal() - 1; i >= 0; i--)
    {
       ulong orderTicket = OrderGetTicket(i);
       ulong magic = OrderGetInteger(ORDER_MAGIC);

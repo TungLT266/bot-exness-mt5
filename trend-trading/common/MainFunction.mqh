@@ -5,6 +5,7 @@
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading/common/CreateOrderAction.mqh>
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading/common/RemoveOrderAction.mqh>
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading/common/CreateValueGlobal.mqh>
+#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading/common/ClosePositionAction.mqh>
 
 // Input
 extern int totalOrderInput;
@@ -58,6 +59,7 @@ void MainFunction()
     RefreshGlobalVariable();
     RemoveOrderAction();
     CreateOrderAction();
+    ClosePositionAction();
 }
 
 void RefreshGlobalVariable()
