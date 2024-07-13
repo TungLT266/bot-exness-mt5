@@ -19,15 +19,20 @@ void RemoveOrderAction()
    int gridNoEnd = GetGridNoEnd();
 
    int total = OrdersTotal();
-   for (int i = 0; i < total; i++)
+   for (int i = total - 1; i >= 0; i--)
    {
       ulong orderTicket = OrderGetTicket(i);
       ulong magic = OrderGetInteger(ORDER_MAGIC);
       if (magic == magicNumberInput)
       {
+         ENUM_ORDER_TYPE orderType = (ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);
          string comment = OrderGetString(ORDER_COMMENT);
          int gridNo = (int)StringToInteger(comment);
          if (gridNo < (gridNoStart) || gridNo > gridNoEnd)
+         {
+            RemoveOrderByTicket(orderTicket);
+         }
+         else if (GetTypeOrderStrByType(orderType) != GetTypeOrderByGridNo(gridNo))
          {
             RemoveOrderByTicket(orderTicket);
          }

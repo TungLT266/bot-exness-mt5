@@ -83,31 +83,52 @@ int GetTotalPositionSell()
    }
    return result;
 }
+string GetTypeOrderStrByType(ENUM_ORDER_TYPE type)
+{
+   if (type == ORDER_TYPE_BUY_LIMIT || type == ORDER_TYPE_BUY_STOP)
+   {
+      return BUY_TYPE_CONSTANT;
+   }
+   else if (type == ORDER_TYPE_SELL_LIMIT || type == ORDER_TYPE_SELL_STOP)
+   {
+      return SELL_TYPE_CONSTANT;
+   }
+   return "";
+}
 
 string GetTypeOrderByGridNo(int gridNo)
 {
-   int numberOrderBuyTop = totalOrderInput / 2;
-   int numberOrderSellTop = totalOrderInput / 2;
+   int halfTotalOrder = totalOrderInput / 2;
+   int numberOrderBuyTop = halfTotalOrder;
+   int numberOrderSellTop = halfTotalOrder;
    int numberOrderBuyLimit = 0;
    int numberOrderSellLimit = 0;
 
    if (differenceBuyAndSellGlobal > 0)
    {
-      numberOrderSellLimit = differenceBuyAndSellGlobal;
-      if (numberOrderSellLimit > (totalOrderInput / 2))
+      if (differenceBuyAndSellGlobal >= halfTotalOrder)
       {
-         numberOrderSellLimit = totalOrderInput / 2;
+         numberOrderSellLimit = halfTotalOrder;
+         numberOrderBuyTop = 0;
       }
-      numberOrderBuyTop = (totalOrderInput / 2) - differenceBuyAndSellGlobal;
+      else
+      {
+         numberOrderSellLimit = differenceBuyAndSellGlobal;
+         numberOrderBuyTop = halfTotalOrder - differenceBuyAndSellGlobal;
+      }
    }
    else if (differenceBuyAndSellGlobal < 0)
    {
-      numberOrderBuyLimit = differenceBuyAndSellGlobal * (-1);
-      if (numberOrderBuyLimit > (totalOrderInput / 2))
+      if (MathAbs(differenceBuyAndSellGlobal) >= halfTotalOrder)
       {
-         numberOrderBuyLimit = totalOrderInput / 2;
+         numberOrderBuyLimit = halfTotalOrder;
+         numberOrderSellTop = 0;
       }
-      numberOrderSellTop = (totalOrderInput / 2) + differenceBuyAndSellGlobal;
+      else
+      {
+         numberOrderBuyLimit = MathAbs(differenceBuyAndSellGlobal);
+         numberOrderSellTop = halfTotalOrder - MathAbs(differenceBuyAndSellGlobal);
+      }
    }
 
    if (numberOrderBuyTop > 0)
