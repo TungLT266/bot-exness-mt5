@@ -3,7 +3,6 @@
 
 extern double gridAmountInput;
 extern ulong magicNumberInput;
-extern int totalOrderInput;
 
 extern int gridNoCurrentGlobal;
 extern int differenceBuyAndSellGlobal;
@@ -100,32 +99,70 @@ string GetTypePositionStrByType(ENUM_POSITION_TYPE type)
    return "";
 }
 
-string GetTypeOrderByGridNo(int gridNo)
+int GetGridNoBuyUp()
 {
-   if (gridNo > gridNoCurrentGlobal)
+   for (int i = gridNoCurrentGlobal + 1; i < gridNoCurrentGlobal + 11; i++)
    {
-      int start = gridNoCurrentGlobal + 1;
-      int end = gridNoCurrentGlobal + differenceBuyAndSellGlobal;
-      if (gridNo >= start && gridNo <= end)
+      if (!IsExistGridNoInPosition(i, BUY_TYPE_CONSTANT))
       {
-         return SELL_TYPE_CONSTANT;
-      }
-      else
-      {
-         return BUY_TYPE_CONSTANT;
+         return i;
       }
    }
-   else
+   return 0;
+}
+
+int GetGridNoSellUp()
+{
+   for (int i = gridNoCurrentGlobal + 1; i < gridNoCurrentGlobal + 11; i++)
    {
-      int start = gridNoCurrentGlobal + differenceBuyAndSellGlobal + 1;
-      int end = gridNoCurrentGlobal;
-      if (gridNo >= start && gridNo <= end)
+      if (!IsExistGridNoInPosition(i, SELL_TYPE_CONSTANT))
       {
-         return BUY_TYPE_CONSTANT;
-      }
-      else
-      {
-         return SELL_TYPE_CONSTANT;
+         return i;
       }
    }
+   return 0;
+}
+
+int GetGridNoBuyDown()
+{
+   for (int i = gridNoCurrentGlobal; i > gridNoCurrentGlobal - 10; i--)
+   {
+      if (!IsExistGridNoInPosition(i, BUY_TYPE_CONSTANT))
+      {
+         return i;
+      }
+   }
+   return 0;
+}
+
+int GetGridNoSellDown()
+{
+   for (int i = gridNoCurrentGlobal; i > gridNoCurrentGlobal - 10; i--)
+   {
+      if (!IsExistGridNoInPosition(i, SELL_TYPE_CONSTANT))
+      {
+         return i;
+      }
+   }
+   return 0;
+}
+
+bool IsExistGridNoInPosition(int gridNo, string typeStr)
+{
+   int totalPosition = PositionsTotal();
+   for (int i = 0; i < totalPosition; i++)
+   {
+      ulong positionTicket = PositionGetTicket(i);
+      ulong magic = PositionGetInteger(POSITION_MAGIC);
+      if (magic == magicNumberInput)
+      {
+         string comment = PositionGetString(POSITION_COMMENT);
+         ENUM_POSITION_TYPE positionType = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+         if (typeStr == GetTypePositionStrByType(positionType) && gridNo == StringToInteger(comment))
+         {
+            return true;
+         }
+      }
+   }
+   return false;
 }

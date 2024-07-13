@@ -17,20 +17,20 @@ void CreateOrderAction()
 {
    if (differenceBuyAndSellGlobal > 0)
    {
-      CreateOrder(gridNoCurrentGlobal, SELL_TYPE_CONSTANT);
-      CreateOrder(gridNoCurrentGlobal + 1, SELL_TYPE_CONSTANT);
+      CreateOrder(GetGridNoSellUp(), SELL_TYPE_CONSTANT);
+      CreateOrder(GetGridNoSellDown(), SELL_TYPE_CONSTANT);
    }
    else if (differenceBuyAndSellGlobal < 0)
    {
-      CreateOrder(gridNoCurrentGlobal, BUY_TYPE_CONSTANT);
-      CreateOrder(gridNoCurrentGlobal + 1, BUY_TYPE_CONSTANT);
+      CreateOrder(GetGridNoBuyUp(), BUY_TYPE_CONSTANT);
+      CreateOrder(GetGridNoBuyDown(), BUY_TYPE_CONSTANT);
    }
    else
    {
-      CreateOrder(gridNoCurrentGlobal, BUY_TYPE_CONSTANT);
-      CreateOrder(gridNoCurrentGlobal + 1, BUY_TYPE_CONSTANT);
-      CreateOrder(gridNoCurrentGlobal, SELL_TYPE_CONSTANT);
-      CreateOrder(gridNoCurrentGlobal + 1, SELL_TYPE_CONSTANT);
+      CreateOrder(GetGridNoBuyUp(), BUY_TYPE_CONSTANT);
+      CreateOrder(GetGridNoBuyDown(), BUY_TYPE_CONSTANT);
+      CreateOrder(GetGridNoSellUp(), SELL_TYPE_CONSTANT);
+      CreateOrder(GetGridNoSellDown(), SELL_TYPE_CONSTANT);
    }
 }
 
@@ -52,26 +52,15 @@ bool IsExistGridNo(int gridNo, string typeStr)
       }
    }
 
-   int totalPosition = PositionsTotal();
-   for (int i = 0; i < totalPosition; i++)
-   {
-      ulong positionTicket = PositionGetTicket(i);
-      ulong magic = PositionGetInteger(POSITION_MAGIC);
-      if (magic == magicNumberInput)
-      {
-         string comment = PositionGetString(POSITION_COMMENT);
-         ENUM_POSITION_TYPE positionType = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
-         if (typeStr == GetTypePositionStrByType(positionType) && gridNo == StringToInteger(comment))
-         {
-            return true;
-         }
-      }
-   }
-   return false;
+   return IsExistGridNoInPosition(gridNo, typeStr);
 }
 
 void CreateOrder(int gridNo, string typeStr)
 {
+   if (gridNo == 0)
+   {
+      return;
+   }
    if (IsExistGridNo(gridNo, typeStr))
    {
       return;

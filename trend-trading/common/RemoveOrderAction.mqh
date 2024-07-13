@@ -5,7 +5,6 @@
 
 extern ulong magicNumberInput;
 
-extern int gridNoCurrentGlobal;
 extern int differenceBuyAndSellGlobal;
 
 extern string BUY_TYPE_CONSTANT;
@@ -19,23 +18,60 @@ void RemoveOrderAction()
       ulong magic = OrderGetInteger(ORDER_MAGIC);
       if (magic == magicNumberInput)
       {
-         ENUM_ORDER_TYPE orderType = (ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);
-         string comment = OrderGetString(ORDER_COMMENT);
-         int gridNo = (int)StringToInteger(comment);
-         if (gridNo != gridNoCurrentGlobal && gridNo != gridNoCurrentGlobal + 1)
-         {
-            RemoveOrderByTicket(orderTicket);
-         }
-         else if (differenceBuyAndSellGlobal > 0 && GetTypeOrderStrByType(orderType) == BUY_TYPE_CONSTANT)
-         {
-            RemoveOrderByTicket(orderTicket);
-         }
-         else if (differenceBuyAndSellGlobal < 0 && GetTypeOrderStrByType(orderType) == SELL_TYPE_CONSTANT)
+         string typeStr = GetTypeOrderStrByType((ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE));
+         int gridNo = (int)StringToInteger(OrderGetString(ORDER_COMMENT));
+         if (IsOrderTicketInvalid(gridNo, typeStr))
          {
             RemoveOrderByTicket(orderTicket);
          }
       }
    }
+}
+
+bool IsOrderTicketInvalid(int gridNo, string typeStr)
+{
+   if (differenceBuyAndSellGlobal > 0)
+   {
+      if (gridNo == GetGridNoSellUp() && typeStr == SELL_TYPE_CONSTANT)
+      {
+         return false;
+      }
+      if (gridNo == GetGridNoSellDown() && typeStr == SELL_TYPE_CONSTANT)
+      {
+         return false;
+      }
+   }
+   else if (differenceBuyAndSellGlobal < 0)
+   {
+      if (gridNo == GetGridNoBuyUp() && typeStr == BUY_TYPE_CONSTANT)
+      {
+         return false;
+      }
+      if (gridNo == GetGridNoBuyDown() && typeStr == BUY_TYPE_CONSTANT)
+      {
+         return false;
+      }
+   }
+   else
+   {
+      if (gridNo == GetGridNoSellUp() && typeStr == SELL_TYPE_CONSTANT)
+      {
+         return false;
+      }
+      if (gridNo == GetGridNoSellDown() && typeStr == SELL_TYPE_CONSTANT)
+      {
+         return false;
+      }
+      if (gridNo == GetGridNoBuyUp() && typeStr == BUY_TYPE_CONSTANT)
+      {
+         return false;
+      }
+      if (gridNo == GetGridNoBuyDown() && typeStr == BUY_TYPE_CONSTANT)
+      {
+         return false;
+      }
+   }
+   return true;
 }
 
 void RemoveOrderByTicket(ulong ticket)

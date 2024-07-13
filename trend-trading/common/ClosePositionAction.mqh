@@ -7,6 +7,8 @@
 extern int limitPositionInput;
 extern ulong magicNumberInput;
 
+extern int gridNoCurrentGlobal;
+
 void ClosePositionAction()
 {
    int totalPosition = GetTotalPosition();
@@ -23,22 +25,42 @@ void ClosePositionAction()
          ulong magic = PositionGetInteger(POSITION_MAGIC);
          if (magic == magicNumberInput)
          {
-            string comment = OrderGetString(ORDER_COMMENT);
-            int gridNo = (int)StringToInteger(comment);
-            if (gridNoMin == 0 || gridNoMin > gridNo)
+            int gridNo = (int)StringToInteger(OrderGetString(ORDER_COMMENT));
+            ENUM_POSITION_TYPE positionType = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+            if (positionType == POSITION_TYPE_BUY)
             {
-               gridNoMin = gridNo;
-               ticketMin = positionTicket;
+               if (gridNoMax == 0 || gridNoMax < gridNo)
+               {
+                  gridNoMax = gridNo;
+                  ticketMax = positionTicket;
+               }
             }
-            if (gridNoMax == 0 || gridNoMax < gridNo)
+            else
             {
-               gridNoMax = gridNo;
-               ticketMax = positionTicket;
+               if (gridNoMin == 0 || gridNoMin > gridNo)
+               {
+                  gridNoMin = gridNo;
+                  ticketMin = positionTicket;
+               }
             }
          }
       }
-      ClosePosition(ticketMin);
-      ClosePosition(ticketMax);
+
+      int differenceUp = gridNoMax - gridNoCurrentGlobal - 1;
+      int differenceDown = gridNoCurrentGlobal - gridNoMin;
+      if (differenceUp > differenceDown)
+      {
+         ClosePosition(ticketMin);
+      }
+      else if (differenceUp < differenceDown)
+      {
+         ClosePosition(ticketMax);
+      }
+      else
+      {
+         ClosePosition(ticketMin);
+         ClosePosition(ticketMax);
+      }
    }
 }
 
