@@ -3,28 +3,38 @@
 
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading/common/CommonFunction.mqh>
 
-extern int totalOrderInput;
 extern double volumeInput;
 extern double gridAmountInput;
 extern ulong magicNumberInput;
 
 extern int gridNoCurrentGlobal;
+extern int differenceBuyAndSellGlobal;
 
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
 
 void CreateOrderAction()
 {
-   for (int i = GetGridNoStart(); i <= GetGridNoEnd(); i++)
+   if (differenceBuyAndSellGlobal > 0)
    {
-      if (!IsExistGridNo(i))
-      {
-         CreateOrder(i);
-      }
+      CreateOrder(gridNoCurrentGlobal, SELL_TYPE_CONSTANT);
+      CreateOrder(gridNoCurrentGlobal + 1, SELL_TYPE_CONSTANT);
+   }
+   else if (differenceBuyAndSellGlobal < 0)
+   {
+      CreateOrder(gridNoCurrentGlobal, BUY_TYPE_CONSTANT);
+      CreateOrder(gridNoCurrentGlobal + 1, BUY_TYPE_CONSTANT);
+   }
+   else
+   {
+      CreateOrder(gridNoCurrentGlobal, BUY_TYPE_CONSTANT);
+      CreateOrder(gridNoCurrentGlobal + 1, BUY_TYPE_CONSTANT);
+      CreateOrder(gridNoCurrentGlobal, SELL_TYPE_CONSTANT);
+      CreateOrder(gridNoCurrentGlobal + 1, SELL_TYPE_CONSTANT);
    }
 }
 
-bool IsExistGridNo(int gridNo)
+bool IsExistGridNo(int gridNo, string typeStr)
 {
    int totalOrder = OrdersTotal();
    for (int i = 0; i < totalOrder; i++)
@@ -34,7 +44,8 @@ bool IsExistGridNo(int gridNo)
       if (magic == magicNumberInput)
       {
          string comment = OrderGetString(ORDER_COMMENT);
-         if (gridNo == StringToInteger(comment))
+         ENUM_ORDER_TYPE orderType = (ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);
+         if (typeStr == GetTypeOrderStrByType(orderType) && gridNo == StringToInteger(comment))
          {
             return true;
          }
@@ -49,7 +60,8 @@ bool IsExistGridNo(int gridNo)
       if (magic == magicNumberInput)
       {
          string comment = PositionGetString(POSITION_COMMENT);
-         if (gridNo == StringToInteger(comment))
+         ENUM_POSITION_TYPE positionType = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+         if (typeStr == GetTypePositionStrByType(positionType) && gridNo == StringToInteger(comment))
          {
             return true;
          }
@@ -58,16 +70,19 @@ bool IsExistGridNo(int gridNo)
    return false;
 }
 
-void CreateOrder(int gridNo)
+void CreateOrder(int gridNo, string typeStr)
 {
+   if (IsExistGridNo(gridNo, typeStr))
+   {
+      return;
+   }
+
    double price = GetPriceByGridNo(gridNo);
    double tp;
    ENUM_ORDER_TYPE type;
 
    double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
    double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-
-   string typeStr = GetTypeOrderByGridNo(gridNo);
    if (typeStr == BUY_TYPE_CONSTANT)
    {
       tp = price + gridAmountInput;

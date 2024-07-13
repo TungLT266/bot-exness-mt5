@@ -8,7 +8,6 @@
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading/common/ClosePositionAction.mqh>
 
 // Input
-extern int totalOrderInput;
 extern double volumeInput;
 extern double gridAmountInput;
 extern int limitPositionInput;
@@ -25,15 +24,6 @@ string SELL_TYPE_CONSTANT = "SELL";
 
 int OnInitFunction()
 {
-    // RemoveOrderAll();
-
-    if (totalOrderInput % 2 != 0)
-    {
-        Print("Grid total invalid.");
-        ExpertRemove();
-        return (INIT_SUCCEEDED);
-    }
-
     Print("Start bot");
 
     MainFunction();

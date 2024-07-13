@@ -16,16 +16,6 @@ double GetPriceByGridNo(int gridNo)
    return gridNo * gridAmountInput;
 }
 
-int GetGridNoStart()
-{
-   return gridNoCurrentGlobal - (totalOrderInput / 2) + 1;
-}
-
-int GetGridNoEnd()
-{
-   return gridNoCurrentGlobal + (totalOrderInput / 2);
-}
-
 int GetGridNoByPrice(double price)
 {
    return (int)MathFloor(price / gridAmountInput);
@@ -83,6 +73,7 @@ int GetTotalPositionSell()
    }
    return result;
 }
+
 string GetTypeOrderStrByType(ENUM_ORDER_TYPE type)
 {
    if (type == ORDER_TYPE_BUY_LIMIT || type == ORDER_TYPE_BUY_STOP)
@@ -90,6 +81,19 @@ string GetTypeOrderStrByType(ENUM_ORDER_TYPE type)
       return BUY_TYPE_CONSTANT;
    }
    else if (type == ORDER_TYPE_SELL_LIMIT || type == ORDER_TYPE_SELL_STOP)
+   {
+      return SELL_TYPE_CONSTANT;
+   }
+   return "";
+}
+
+string GetTypePositionStrByType(ENUM_POSITION_TYPE type)
+{
+   if (type == POSITION_TYPE_BUY)
+   {
+      return BUY_TYPE_CONSTANT;
+   }
+   else if (type == POSITION_TYPE_SELL)
    {
       return SELL_TYPE_CONSTANT;
    }

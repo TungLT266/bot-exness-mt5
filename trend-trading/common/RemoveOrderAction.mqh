@@ -3,21 +3,16 @@
 
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading/common/CommonFunction.mqh>
 
-extern int totalOrderInput;
-extern double gridAmountInput;
 extern ulong magicNumberInput;
-extern int limitPositionInput;
 
 extern int gridNoCurrentGlobal;
+extern int differenceBuyAndSellGlobal;
 
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
 
 void RemoveOrderAction()
 {
-   int gridNoStart = GetGridNoStart();
-   int gridNoEnd = GetGridNoEnd();
-
    for (int i = OrdersTotal() - 1; i >= 0; i--)
    {
       ulong orderTicket = OrderGetTicket(i);
@@ -27,11 +22,15 @@ void RemoveOrderAction()
          ENUM_ORDER_TYPE orderType = (ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE);
          string comment = OrderGetString(ORDER_COMMENT);
          int gridNo = (int)StringToInteger(comment);
-         if (gridNo < (gridNoStart) || gridNo > gridNoEnd)
+         if (gridNo != gridNoCurrentGlobal && gridNo != gridNoCurrentGlobal + 1)
          {
             RemoveOrderByTicket(orderTicket);
          }
-         else if (GetTypeOrderStrByType(orderType) != GetTypeOrderByGridNo(gridNo))
+         else if (differenceBuyAndSellGlobal > 0 && GetTypeOrderStrByType(orderType) == BUY_TYPE_CONSTANT)
+         {
+            RemoveOrderByTicket(orderTicket);
+         }
+         else if (differenceBuyAndSellGlobal < 0 && GetTypeOrderStrByType(orderType) == SELL_TYPE_CONSTANT)
          {
             RemoveOrderByTicket(orderTicket);
          }
