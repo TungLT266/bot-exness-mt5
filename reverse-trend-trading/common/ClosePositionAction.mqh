@@ -27,7 +27,7 @@ void ClosePositionAction()
          {
             int gridNo = (int)StringToInteger(OrderGetString(ORDER_COMMENT));
             ENUM_POSITION_TYPE positionType = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
-            if (positionType == POSITION_TYPE_BUY)
+            if (positionType == POSITION_TYPE_SELL)
             {
                if (gridNoMax == 0 || gridNoMax < gridNo)
                {
@@ -50,11 +50,11 @@ void ClosePositionAction()
       int differenceDown = gridNoCurrentGlobal - gridNoMin;
       if (differenceUp > differenceDown)
       {
-         ClosePosition(ticketMin);
+         ClosePosition(ticketMax);
       }
       else if (differenceUp < differenceDown)
       {
-         ClosePosition(ticketMax);
+         ClosePosition(ticketMin);
       }
       else
       {
