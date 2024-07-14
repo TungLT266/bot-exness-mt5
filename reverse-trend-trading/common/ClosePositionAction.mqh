@@ -50,11 +50,11 @@ void ClosePositionAction()
       int differenceDown = gridNoCurrentGlobal - gridNoMin;
       if (differenceUp > differenceDown)
       {
-         ClosePosition(ticketMax);
+         ClosePosition(ticketMin);
       }
       else if (differenceUp < differenceDown)
       {
-         ClosePosition(ticketMin);
+         ClosePosition(ticketMax);
       }
       else
       {
