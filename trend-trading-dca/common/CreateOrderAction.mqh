@@ -38,7 +38,7 @@ void CreateOrderForDifferenceVolume(string typeStr)
    double differenceVolume = MathAbs(volumeBuyTotalGlobal - volumeSellTotalGlobal);
    int gridNoUp = GetGridNoUp(typeStr);
    int gridNoDown = GetGridNoDown(typeStr);
-   if (differenceVolume > volumeInput)
+   if (CompareDouble(differenceVolume, volumeInput) > 0)
    {
       if (gridNoUp == gridNoCurrentGlobal + 1)
       {
@@ -108,7 +108,7 @@ void CreateOrder(int gridNo, string typeStr, double volume)
    if (typeStr == BUY_TYPE_CONSTANT)
    {
       tp = price + gridAmountInput;
-      if (price > askPrice)
+      if (CompareDouble(price, askPrice) > 0)
       {
          type = ORDER_TYPE_BUY_STOP;
       }
@@ -120,7 +120,7 @@ void CreateOrder(int gridNo, string typeStr, double volume)
    else if (typeStr == SELL_TYPE_CONSTANT)
    {
       tp = price - gridAmountInput;
-      if (price < bidPrice)
+      if (CompareDouble(price, bidPrice) < 0)
       {
          type = ORDER_TYPE_SELL_STOP;
       }

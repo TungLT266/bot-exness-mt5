@@ -57,7 +57,7 @@ void RefreshGlobalVariable()
 {
     double volumeBuyTotalNew = GetVolumeBuyTotal();
     double volumeSellTotalNew = GetVolumeSellTotal();
-    if (volumeBuyTotalGlobal != volumeBuyTotalNew || volumeSellTotalGlobal != volumeSellTotalNew)
+    if (CompareDouble(volumeBuyTotalGlobal, volumeBuyTotalNew) != 0 || CompareDouble(volumeSellTotalGlobal, volumeSellTotalNew) != 0)
     {
         volumeBuyTotalGlobal = volumeBuyTotalNew;
         volumeSellTotalGlobal = volumeSellTotalNew;
