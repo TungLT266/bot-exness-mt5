@@ -2,7 +2,7 @@
 #property link "https://www.mql5.com"
 
 #include <Trade/Trade.mqh>
-#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading/common/CommonFunction.mqh>
+#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/reverse-trend-trading/common/CommonFunction.mqh>
 
 extern int limitPositionInput;
 extern ulong magicNumberInput;
