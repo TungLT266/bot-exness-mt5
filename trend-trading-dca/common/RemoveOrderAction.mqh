@@ -36,22 +36,22 @@ bool IsOrderTicketInvalidForDifferenceVolume(int gridNo, string typeStr, double 
    double differenceVolume = MathAbs(volumeBuyTotalGlobal - volumeSellTotalGlobal);
    int gridNoUp = GetGridNoUp(typeStr);
    int gridNoDown = GetGridNoDown(typeStr);
-   if (differenceVolume > volumeInput)
+   if (CompareDouble(differenceVolume, volumeInput) > 0)
    {
       if (gridNoUp == gridNoCurrentGlobal + 1)
       {
-         if (gridNo == gridNoUp && volume == differenceVolume)
+         if (gridNo == gridNoUp && CompareDouble(volume, differenceVolume) == 0)
          {
             return false;
          }
       }
       else
       {
-         if (gridNo == gridNoCurrentGlobal + 1 && volume == differenceVolume - volumeInput)
+         if (gridNo == gridNoCurrentGlobal + 1 && CompareDouble(volume, differenceVolume - volumeInput) == 0)
          {
             return false;
          }
-         if (gridNo == gridNoUp && volume == volumeInput)
+         if (gridNo == gridNoUp && CompareDouble(volume, volumeInput) == 0)
          {
             return false;
          }
@@ -59,18 +59,18 @@ bool IsOrderTicketInvalidForDifferenceVolume(int gridNo, string typeStr, double 
 
       if (gridNoDown == gridNoCurrentGlobal)
       {
-         if (gridNo == gridNoDown && volume == differenceVolume)
+         if (gridNo == gridNoDown && CompareDouble(volume, differenceVolume) == 0)
          {
             return false;
          }
       }
       else
       {
-         if (gridNo == gridNoCurrentGlobal && volume == differenceVolume - volumeInput)
+         if (gridNo == gridNoCurrentGlobal && CompareDouble(volume, differenceVolume - volumeInput) == 0)
          {
             return false;
          }
-         if (gridNo == gridNoDown && volume == volumeInput)
+         if (gridNo == gridNoDown && CompareDouble(volume, volumeInput) == 0)
          {
             return false;
          }
@@ -78,11 +78,11 @@ bool IsOrderTicketInvalidForDifferenceVolume(int gridNo, string typeStr, double 
    }
    else
    {
-      if (gridNo == gridNoUp && volume == volumeInput)
+      if (gridNo == gridNoUp && CompareDouble(volume, volumeInput) == 0)
       {
          return false;
       }
-      if (gridNo == gridNoDown && volume == volumeInput)
+      if (gridNo == gridNoDown && CompareDouble(volume, volumeInput) == 0)
       {
          return false;
       }
@@ -110,11 +110,11 @@ bool IsOrderTicketInvalid(int gridNo, string typeStr, double volume)
    }
    else
    {
-      if (gridNo == GetGridNoUp(typeStr) && volume == volumeInput)
+      if (gridNo == GetGridNoUp(typeStr) && CompareDouble(volume, volumeInput) == 0)
       {
          return false;
       }
-      if (gridNo == GetGridNoDown(typeStr) && volume == volumeInput)
+      if (gridNo == GetGridNoDown(typeStr) && CompareDouble(volume, volumeInput) == 0)
       {
          return false;
       }
