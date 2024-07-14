@@ -3,6 +3,8 @@
 
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading-dca/common/CommonFunction.mqh>
 
+extern ulong magicNumberInput;
+
 int GetGridNoCurrent()
 {
    double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
@@ -16,12 +18,31 @@ int GetGridNoCurrent()
    return 0;
 }
 
-int GetDifferenceBuyAndSell()
+double GetVolumeBuyTotal()
 {
-   int totalPosition = GetTotalPosition();
-   if (totalPosition > 0)
+   return GetVolumeTotalBuyType(POSITION_TYPE_BUY);
+}
+
+double GetVolumeSellTotal()
+{
+   return GetVolumeTotalBuyType(POSITION_TYPE_SELL);
+}
+
+double GetVolumeTotalBuyType(ENUM_POSITION_TYPE typeSelect)
+{
+   double result = 0;
+   for (int i = 0; i < PositionsTotal(); i++)
    {
-      return GetTotalPositionBuy() - GetTotalPositionSell();
+      ulong positionTicket = PositionGetTicket(i);
+      ulong magic = PositionGetInteger(POSITION_MAGIC);
+      if (magic == magicNumberInput)
+      {
+         ENUM_POSITION_TYPE positionType = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+         if (positionType == typeSelect)
+         {
+            result += PositionGetDouble(POSITION_VOLUME);
+         }
+      }
    }
-   return 0;
+   return result;
 }

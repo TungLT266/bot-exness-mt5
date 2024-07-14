@@ -8,19 +8,20 @@ extern double gridAmountInput;
 extern ulong magicNumberInput;
 
 extern int gridNoCurrentGlobal;
-extern int differenceBuyAndSellGlobal;
+extern double volumeBuyTotalGlobal;
+extern double volumeSellTotalGlobal;
 
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
 
 void CreateOrderAction()
 {
-   if (differenceBuyAndSellGlobal > 0)
+   if (CompareDouble(volumeBuyTotalGlobal, volumeSellTotalGlobal) > 0)
    {
       CreateOrder(GetGridNoSellUp(), SELL_TYPE_CONSTANT);
       CreateOrder(GetGridNoSellDown(), SELL_TYPE_CONSTANT);
    }
-   else if (differenceBuyAndSellGlobal < 0)
+   else if (CompareDouble(volumeBuyTotalGlobal, volumeSellTotalGlobal) < 0)
    {
       CreateOrder(GetGridNoBuyUp(), BUY_TYPE_CONSTANT);
       CreateOrder(GetGridNoBuyDown(), BUY_TYPE_CONSTANT);
