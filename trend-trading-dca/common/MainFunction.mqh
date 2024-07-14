@@ -19,7 +19,7 @@ double volumeBuyTotalGlobal = 0;
 double volumeSellTotalGlobal = 0;
 
 // Constants
-int DELAY_SECOND_CONSTANT = 10;
+int DELAY_SECOND_CONSTANT = 30;
 string BUY_TYPE_CONSTANT = "BUY";
 string SELL_TYPE_CONSTANT = "SELL";
 

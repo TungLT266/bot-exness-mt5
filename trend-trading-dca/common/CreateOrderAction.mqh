@@ -18,20 +18,52 @@ void CreateOrderAction()
 {
    if (CompareDouble(volumeBuyTotalGlobal, volumeSellTotalGlobal) > 0)
    {
-      CreateOrder(GetGridNoSellUp(), SELL_TYPE_CONSTANT);
-      CreateOrder(GetGridNoSellDown(), SELL_TYPE_CONSTANT);
+      CreateOrderForDifferenceVolume(SELL_TYPE_CONSTANT);
    }
    else if (CompareDouble(volumeBuyTotalGlobal, volumeSellTotalGlobal) < 0)
    {
-      CreateOrder(GetGridNoBuyUp(), BUY_TYPE_CONSTANT);
-      CreateOrder(GetGridNoBuyDown(), BUY_TYPE_CONSTANT);
+      CreateOrderForDifferenceVolume(BUY_TYPE_CONSTANT);
    }
    else
    {
-      CreateOrder(GetGridNoBuyUp(), BUY_TYPE_CONSTANT);
-      CreateOrder(GetGridNoBuyDown(), BUY_TYPE_CONSTANT);
-      CreateOrder(GetGridNoSellUp(), SELL_TYPE_CONSTANT);
-      CreateOrder(GetGridNoSellDown(), SELL_TYPE_CONSTANT);
+      CreateOrder(GetGridNoUp(BUY_TYPE_CONSTANT), BUY_TYPE_CONSTANT, volumeInput);
+      CreateOrder(GetGridNoDown(BUY_TYPE_CONSTANT), BUY_TYPE_CONSTANT, volumeInput);
+      CreateOrder(GetGridNoUp(SELL_TYPE_CONSTANT), SELL_TYPE_CONSTANT, volumeInput);
+      CreateOrder(GetGridNoDown(SELL_TYPE_CONSTANT), SELL_TYPE_CONSTANT, volumeInput);
+   }
+}
+
+void CreateOrderForDifferenceVolume(string typeStr)
+{
+   double differenceVolume = MathAbs(volumeBuyTotalGlobal - volumeSellTotalGlobal);
+   int gridNoUp = GetGridNoUp(typeStr);
+   int gridNoDown = GetGridNoDown(typeStr);
+   if (differenceVolume > volumeInput)
+   {
+      if (gridNoUp == gridNoCurrentGlobal + 1)
+      {
+         CreateOrder(gridNoUp, typeStr, differenceVolume);
+      }
+      else
+      {
+         CreateOrder(gridNoCurrentGlobal + 1, typeStr, differenceVolume - volumeInput);
+         CreateOrder(gridNoUp, typeStr, volumeInput);
+      }
+
+      if (gridNoDown == gridNoCurrentGlobal)
+      {
+         CreateOrder(gridNoDown, typeStr, differenceVolume);
+      }
+      else
+      {
+         CreateOrder(gridNoCurrentGlobal, typeStr, differenceVolume - volumeInput);
+         CreateOrder(gridNoDown, typeStr, volumeInput);
+      }
+   }
+   else
+   {
+      CreateOrder(gridNoUp, typeStr, volumeInput);
+      CreateOrder(gridNoDown, typeStr, volumeInput);
    }
 }
 
@@ -56,7 +88,7 @@ bool IsExistGridNo(int gridNo, string typeStr)
    return IsExistGridNoInPosition(gridNo, typeStr);
 }
 
-void CreateOrder(int gridNo, string typeStr)
+void CreateOrder(int gridNo, string typeStr, double volume)
 {
    if (gridNo == 0)
    {
@@ -109,7 +141,7 @@ void CreateOrder(int gridNo, string typeStr)
    ZeroMemory(request);
    request.action = TRADE_ACTION_PENDING;
    request.symbol = _Symbol;
-   request.volume = volumeInput;
+   request.volume = volume;
    request.type = type;
    request.price = price;
    request.tp = tp;

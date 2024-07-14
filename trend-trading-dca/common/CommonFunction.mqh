@@ -117,11 +117,11 @@ string GetTypePositionStrByType(ENUM_POSITION_TYPE type)
    return "";
 }
 
-int GetGridNoBuyUp()
+int GetGridNoUp(string typeStr)
 {
    for (int i = gridNoCurrentGlobal + 1; i < gridNoCurrentGlobal + 11; i++)
    {
-      if (!IsExistGridNoInPosition(i, BUY_TYPE_CONSTANT))
+      if (!IsExistGridNoInPosition(i, typeStr))
       {
          return i;
       }
@@ -129,35 +129,11 @@ int GetGridNoBuyUp()
    return 0;
 }
 
-int GetGridNoSellUp()
-{
-   for (int i = gridNoCurrentGlobal + 1; i < gridNoCurrentGlobal + 11; i++)
-   {
-      if (!IsExistGridNoInPosition(i, SELL_TYPE_CONSTANT))
-      {
-         return i;
-      }
-   }
-   return 0;
-}
-
-int GetGridNoBuyDown()
+int GetGridNoDown(string typeStr)
 {
    for (int i = gridNoCurrentGlobal; i > gridNoCurrentGlobal - 10; i--)
    {
-      if (!IsExistGridNoInPosition(i, BUY_TYPE_CONSTANT))
-      {
-         return i;
-      }
-   }
-   return 0;
-}
-
-int GetGridNoSellDown()
-{
-   for (int i = gridNoCurrentGlobal; i > gridNoCurrentGlobal - 10; i--)
-   {
-      if (!IsExistGridNoInPosition(i, SELL_TYPE_CONSTANT))
+      if (!IsExistGridNoInPosition(i, typeStr))
       {
          return i;
       }

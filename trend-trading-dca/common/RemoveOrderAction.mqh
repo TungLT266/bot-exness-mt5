@@ -4,8 +4,10 @@
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trend-trading-dca/common/CommonFunction.mqh>
 
 extern ulong magicNumberInput;
+extern double volumeInput;
 
-extern int differenceBuyAndSellGlobal;
+extern double volumeBuyTotalGlobal;
+extern double volumeSellTotalGlobal;
 
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
@@ -20,7 +22,8 @@ void RemoveOrderAction()
       {
          string typeStr = GetTypeOrderStrByType((ENUM_ORDER_TYPE)OrderGetInteger(ORDER_TYPE));
          int gridNo = (int)StringToInteger(OrderGetString(ORDER_COMMENT));
-         if (IsOrderTicketInvalid(gridNo, typeStr))
+         double volume = PositionGetDouble(POSITION_VOLUME);
+         if (IsOrderTicketInvalid(gridNo, typeStr, volume))
          {
             RemoveOrderByTicket(orderTicket);
          }
@@ -28,45 +31,90 @@ void RemoveOrderAction()
    }
 }
 
-bool IsOrderTicketInvalid(int gridNo, string typeStr)
+bool IsOrderTicketInvalidForDifferenceVolume(int gridNo, string typeStr, double volume)
 {
-   if (differenceBuyAndSellGlobal > 0)
+   double differenceVolume = MathAbs(volumeBuyTotalGlobal - volumeSellTotalGlobal);
+   int gridNoUp = GetGridNoUp(typeStr);
+   int gridNoDown = GetGridNoDown(typeStr);
+   if (differenceVolume > volumeInput)
    {
-      if (gridNo == GetGridNoSellUp() && typeStr == SELL_TYPE_CONSTANT)
+      if (gridNoUp == gridNoCurrentGlobal + 1)
       {
-         return false;
+         if (gridNo == gridNoUp && volume == differenceVolume)
+         {
+            return false;
+         }
       }
-      if (gridNo == GetGridNoSellDown() && typeStr == SELL_TYPE_CONSTANT)
+      else
       {
-         return false;
+         if (gridNo == gridNoCurrentGlobal + 1 && volume == differenceVolume - volumeInput)
+         {
+            return false;
+         }
+         if (gridNo == gridNoUp && volume == volumeInput)
+         {
+            return false;
+         }
       }
-   }
-   else if (differenceBuyAndSellGlobal < 0)
-   {
-      if (gridNo == GetGridNoBuyUp() && typeStr == BUY_TYPE_CONSTANT)
+
+      if (gridNoDown == gridNoCurrentGlobal)
       {
-         return false;
+         if (gridNo == gridNoDown && volume == differenceVolume)
+         {
+            return false;
+         }
       }
-      if (gridNo == GetGridNoBuyDown() && typeStr == BUY_TYPE_CONSTANT)
+      else
       {
-         return false;
+         if (gridNo == gridNoCurrentGlobal && volume == differenceVolume - volumeInput)
+         {
+            return false;
+         }
+         if (gridNo == gridNoDown && volume == volumeInput)
+         {
+            return false;
+         }
       }
    }
    else
    {
-      if (gridNo == GetGridNoSellUp() && typeStr == SELL_TYPE_CONSTANT)
+      if (gridNo == gridNoUp && volume == volumeInput)
       {
          return false;
       }
-      if (gridNo == GetGridNoSellDown() && typeStr == SELL_TYPE_CONSTANT)
+      if (gridNo == gridNoDown && volume == volumeInput)
       {
          return false;
       }
-      if (gridNo == GetGridNoBuyUp() && typeStr == BUY_TYPE_CONSTANT)
+   }
+   return true;
+}
+
+bool IsOrderTicketInvalid(int gridNo, string typeStr, double volume)
+{
+   if (CompareDouble(volumeBuyTotalGlobal, volumeSellTotalGlobal) > 0)
+   {
+      if (typeStr != SELL_TYPE_CONSTANT)
+      {
+         return true;
+      }
+      return IsOrderTicketInvalidForDifferenceVolume(gridNo, typeStr, volume);
+   }
+   else if (CompareDouble(volumeBuyTotalGlobal, volumeSellTotalGlobal) < 0)
+   {
+      if (typeStr != BUY_TYPE_CONSTANT)
+      {
+         return true;
+      }
+      return IsOrderTicketInvalidForDifferenceVolume(gridNo, typeStr, volume);
+   }
+   else
+   {
+      if (gridNo == GetGridNoUp(typeStr) && volume == volumeInput)
       {
          return false;
       }
-      if (gridNo == GetGridNoBuyDown() && typeStr == BUY_TYPE_CONSTANT)
+      if (gridNo == GetGridNoDown(typeStr) && volume == volumeInput)
       {
          return false;
       }
