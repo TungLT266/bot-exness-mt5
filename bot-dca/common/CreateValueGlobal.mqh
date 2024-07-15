@@ -8,6 +8,11 @@ extern bool isTradeBuyFirstInput;
 extern bool isTradeBuyFirstGlobal;
 extern double priceStartGlobal;
 
+double GetSpread()
+{
+   return SymbolInfoInteger(_Symbol, SYMBOL_SPREAD) * _Point;
+}
+
 void SetPriceStartAndIsTradeBuyFirst()
 {
    double priceStartNew = 0;

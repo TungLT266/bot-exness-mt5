@@ -17,6 +17,7 @@ double priceStartGlobal = 0;
 bool isTakeProfitBuyGlobal;
 bool isTradeBuyFirstGlobal;
 bool isHasRunOnceGlobal = false;
+double spreadGlobal = 0;
 
 // Constants
 int DELAY_SECOND_CONSTANT = 10;
@@ -77,5 +78,12 @@ void RefreshGlobalVariable()
         {
             Print("Direction Down.");
         }
+    }
+
+    double spreadNew = GetSpread();
+    if (compareDouble(spreadGlobal, spreadNew) != 0)
+    {
+        spreadGlobal = spreadNew;
+        Print("Spread: ", spreadGlobal);
     }
 }
