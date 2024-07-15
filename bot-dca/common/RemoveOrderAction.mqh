@@ -13,7 +13,7 @@ void RemoveOrderAction()
 void RemoveOrderAll()
 {
    int total = OrdersTotal();
-   for (int i = 0; i < total; i++)
+   for (int i = total - 1; i >= 0; i--)
    {
       ulong orderTicket = OrderGetTicket(0);
       ulong magic = OrderGetInteger(ORDER_MAGIC);
