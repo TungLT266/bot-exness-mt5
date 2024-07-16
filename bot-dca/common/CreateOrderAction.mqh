@@ -81,7 +81,6 @@ void CreateOrderFirst()
 
 void CreateOrder(int gridNo, string type)
 {
-   double volume = GetVolumeByGridNo(gridNo);
    ENUM_ORDER_TYPE orderType;
    if (type == BUY_TYPE_CONSTANT)
    {
@@ -98,7 +97,7 @@ void CreateOrder(int gridNo, string type)
    ZeroMemory(request);
    request.action = TRADE_ACTION_PENDING;
    request.symbol = _Symbol;
-   request.volume = volume;
+   request.volume = GetVolumeOrder();
    request.type = orderType;
    request.price = GetPriceByTypeOrder(type);
    request.comment = IntegerToString(gridNo);
@@ -114,19 +113,10 @@ void CreateOrder(int gridNo, string type)
    }
 }
 
-double GetVolumeByGridNo(int gridNo)
+double GetVolumeOrder()
 {
-   if (gridNo == 1)
-   {
-      return volumeInput;
-   }
-   else if (gridNo == 2)
-   {
-      return volumeInput * 2;
-   }
-
-   double gridNoMinus1Volume = 0;
-   double gridNoMinus2Volume = 0;
+   double totalVolumeBuy = 0;
+   double totalVolumeSell = 0;
 
    int totalPosition = PositionsTotal();
    for (int i = 0; i < totalPosition; i++)
@@ -135,17 +125,25 @@ double GetVolumeByGridNo(int gridNo)
       ulong magic = PositionGetInteger(POSITION_MAGIC);
       if (magic == magicNumberInput)
       {
-         string comment = PositionGetString(POSITION_COMMENT);
-         int gridNoComment = (int)StringToInteger(comment);
-         if (gridNoComment == (gridNo - 1))
+         double volume = PositionGetDouble(POSITION_VOLUME);
+         ENUM_POSITION_TYPE type = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+         if (type == POSITION_TYPE_BUY)
          {
-            gridNoMinus1Volume = PositionGetDouble(POSITION_VOLUME);
+            totalVolumeBuy += volume;
          }
-         else if (gridNoComment == (gridNo - 2))
+         else
          {
-            gridNoMinus2Volume = PositionGetDouble(POSITION_VOLUME);
+            totalVolumeSell += volume;
          }
       }
    }
-   return gridNoMinus1Volume + gridNoMinus2Volume;
+
+   if (compareDouble(totalVolumeBuy, totalVolumeSell) > 0)
+   {
+      return totalVolumeBuy * 2 - totalVolumeSell;
+   }
+   else
+   {
+      return totalVolumeSell * 2 - totalVolumeBuy;
+   }
 }
