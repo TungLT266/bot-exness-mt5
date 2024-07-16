@@ -22,8 +22,7 @@ void SetPriceStartAndIsTradeBuyFirst()
    for (int i = 0; i < totalPosition; i++)
    {
       ulong positionTicket = PositionGetTicket(i);
-      ulong magic = PositionGetInteger(POSITION_MAGIC);
-      if (magic == magicNumberInput)
+      if (IsCorrectMagic(PositionGetInteger(POSITION_MAGIC)))
       {
          string comment = PositionGetString(POSITION_COMMENT);
          if (StringToInteger(comment) == 1)
@@ -70,8 +69,7 @@ bool GetIsTakeProfitBuy()
    for (int i = 0; i < totalPosition; i++)
    {
       ulong positionTicket = PositionGetTicket(i);
-      ulong magic = PositionGetInteger(POSITION_MAGIC);
-      if (magic == magicNumberInput)
+      if (IsCorrectMagic(PositionGetInteger(POSITION_MAGIC)))
       {
          string comment = PositionGetString(POSITION_COMMENT);
          int gridNoComment = (int)StringToInteger(comment);

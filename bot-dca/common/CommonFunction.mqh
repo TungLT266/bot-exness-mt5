@@ -13,6 +13,11 @@ extern bool isTradeBuyFirstGlobal;
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
 
+bool IsCorrectMagic(ulong magic)
+{
+    return magic == magicNumberInput;
+}
+
 double GetPriceByTypeOrder(string type)
 {
     if (type == BUY_TYPE_CONSTANT)
@@ -46,8 +51,7 @@ int GetTotalPosition()
     for (int i = 0; i < totalPosition; i++)
     {
         ulong positionTicket = PositionGetTicket(i);
-        ulong magic = PositionGetInteger(POSITION_MAGIC);
-        if (magic == magicNumberInput)
+        if (IsCorrectMagic(PositionGetInteger(POSITION_MAGIC)))
         {
             result++;
         }
@@ -81,8 +85,7 @@ int GetTotalOrder()
     for (int i = 0; i < totalOrder; i++)
     {
         ulong ticket = OrderGetTicket(i);
-        ulong magic = OrderGetInteger(ORDER_MAGIC);
-        if (magic == magicNumberInput)
+        if (IsCorrectMagic(OrderGetInteger(ORDER_MAGIC)))
         {
             result++;
         }
