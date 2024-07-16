@@ -30,6 +30,8 @@ int OnInitFunction()
     if (symbolInput != _Symbol)
     {
         Print("Symbol invalid.");
+        ExpertRemove();
+        return (INIT_SUCCEEDED);
     }
 
     Print("Start bot");
