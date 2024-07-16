@@ -7,15 +7,10 @@ extern ulong magicNumberInput;
 
 void RemoveOrderAction()
 {
-   RemoveOrderAll();
-}
-
-void RemoveOrderAll()
-{
    int total = OrdersTotal();
    for (int i = total - 1; i >= 0; i--)
    {
-      ulong orderTicket = OrderGetTicket(0);
+      ulong orderTicket = OrderGetTicket(i);
       ulong magic = OrderGetInteger(ORDER_MAGIC);
       if (magic == magicNumberInput)
       {
