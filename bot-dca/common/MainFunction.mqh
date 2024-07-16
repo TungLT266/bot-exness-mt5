@@ -11,6 +11,7 @@
 // Input
 extern ulong magicNumberInput;
 extern bool isOnlyRunOnceInput;
+extern string symbolInput;
 
 // Global
 double priceStartGlobal = 0;
@@ -26,6 +27,11 @@ string SELL_TYPE_CONSTANT = "SELL";
 
 int OnInitFunction()
 {
+    if (symbolInput != _Symbol)
+    {
+        Print("Symbol invalid.");
+    }
+
     Print("Start bot");
     Print("Input: Is trade buy first: ", isTradeBuyFirstInput, " - Limit: ", limitGridInput, " - Is only run once: ", isOnlyRunOnceInput, " - SL: ", slAmountInput, " - TP: ", tpNumberInput, " - Volume: ", volumeInput, " - Magic: ", magicNumberInput);
 
