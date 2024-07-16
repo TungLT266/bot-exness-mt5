@@ -122,18 +122,16 @@ double GetVolumeOrder()
    for (int i = 0; i < totalPosition; i++)
    {
       ulong positionTicket = PositionGetTicket(i);
-      ulong magic = PositionGetInteger(POSITION_MAGIC);
-      if (magic == magicNumberInput)
+      if (IsCorrectMagic(PositionGetInteger(POSITION_MAGIC)))
       {
-         double volume = PositionGetDouble(POSITION_VOLUME);
          ENUM_POSITION_TYPE type = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
          if (type == POSITION_TYPE_BUY)
          {
-            totalVolumeBuy += volume;
+            totalVolumeBuy += PositionGetDouble(POSITION_VOLUME);
          }
          else
          {
-            totalVolumeSell += volume;
+            totalVolumeSell += PositionGetDouble(POSITION_VOLUME);
          }
       }
    }
