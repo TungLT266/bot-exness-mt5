@@ -22,7 +22,7 @@ double spreadGlobal = 0;
 int totalPositionGlobal = 0;
 
 // Constants
-int DELAY_SECOND_CONSTANT = 10;
+int DELAY_SECOND_CONSTANT = 30;
 string BUY_TYPE_CONSTANT = "BUY";
 string SELL_TYPE_CONSTANT = "SELL";
 
