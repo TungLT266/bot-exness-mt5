@@ -19,6 +19,7 @@ bool isTakeProfitBuyGlobal;
 bool isTradeBuyFirstGlobal;
 bool isHasRunOnceGlobal = false;
 double spreadGlobal = 0;
+int totalPositionGlobal = 0;
 
 // Constants
 int DELAY_SECOND_CONSTANT = 10;
@@ -86,6 +87,13 @@ void RefreshGlobalVariable()
         {
             Print("Direction Down.");
         }
+    }
+
+    int totalPositionNew = GetTotalPosition();
+    if (totalPositionGlobal != totalPositionNew)
+    {
+        totalPositionGlobal = totalPositionNew;
+        Print("Total position: ", totalPositionGlobal);
     }
 
     double spreadNew = GetSpread();
