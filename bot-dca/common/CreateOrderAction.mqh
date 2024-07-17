@@ -11,14 +11,14 @@ extern int limitGridInput;
 extern double priceStartGlobal;
 extern bool isTakeProfitBuyGlobal;
 extern bool isTradeBuyFirstGlobal;
+extern int totalPositionGlobal;
 
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
 
 void CreateOrderAction()
 {
-   int totalPosition = GetTotalPosition();
-   if (totalPosition == 0)
+   if (totalPositionGlobal == 0)
    {
       CreateOrderFirst();
       return;
@@ -28,19 +28,17 @@ void CreateOrderAction()
 
 void CreateOrderAfterFirst()
 {
-   int totalPosition = GetTotalPosition();
-   if (totalPosition > 0 && totalPosition < limitGridInput)
+   if (totalPositionGlobal > 0 && totalPositionGlobal < limitGridInput)
    {
-      int totalOrder = GetTotalOrder();
-      if (totalOrder == 0)
+      if (GetTotalOrder() == 0)
       {
          if (isTakeProfitBuyGlobal)
          {
-            CreateOrder(totalPosition + 1, SELL_TYPE_CONSTANT);
+            CreateOrder(totalPositionGlobal + 1, SELL_TYPE_CONSTANT);
          }
          else
          {
-            CreateOrder(totalPosition + 1, BUY_TYPE_CONSTANT);
+            CreateOrder(totalPositionGlobal + 1, BUY_TYPE_CONSTANT);
          }
       }
    }

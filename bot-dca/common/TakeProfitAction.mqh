@@ -9,6 +9,7 @@ extern int limitGridInput;
 
 extern double priceStartGlobal;
 extern bool isTakeProfitBuyGlobal;
+extern int totalPositionGlobal;
 
 void TakeProfitAction()
 {
@@ -20,7 +21,7 @@ void TakeProfitAction()
          CloseAllPosition();
       }
 
-      if (GetTotalPosition() >= limitGridInput)
+      if (totalPositionGlobal >= limitGridInput)
       {
          if (bidPrice <= GetSL())
          {
@@ -36,7 +37,7 @@ void TakeProfitAction()
          CloseAllPosition();
       }
 
-      if (GetTotalPosition() >= limitGridInput)
+      if (totalPositionGlobal >= limitGridInput)
       {
          if (askPrice >= GetSL())
          {

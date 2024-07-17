@@ -92,8 +92,17 @@ void RefreshGlobalVariable()
     int totalPositionNew = GetTotalPosition();
     if (totalPositionGlobal != totalPositionNew)
     {
-        totalPositionGlobal = totalPositionNew;
-        Print("Total position: ", totalPositionGlobal);
+        Print("Total position: ", totalPositionNew);
+        if (totalPositionGlobal > totalPositionNew)
+        {
+            Print("Close all position.");
+            CloseAllPosition();
+            totalPositionGlobal = 0;
+        }
+        else
+        {
+            totalPositionGlobal = totalPositionNew;
+        }
     }
 
     double spreadNew = GetSpread();
