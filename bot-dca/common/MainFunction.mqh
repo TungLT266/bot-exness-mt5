@@ -18,7 +18,6 @@ double priceStartGlobal = 0;
 bool isTakeProfitBuyGlobal;
 bool isTradeBuyFirstGlobal;
 bool isHasRunOnceGlobal = false;
-double spreadGlobal = 0;
 int totalPositionGlobal = 0;
 
 // Constants
@@ -103,12 +102,5 @@ void RefreshGlobalVariable()
         {
             totalPositionGlobal = totalPositionNew;
         }
-    }
-
-    double spreadNew = GetSpread();
-    if (compareDouble(spreadGlobal, spreadNew) != 0)
-    {
-        spreadGlobal = spreadNew;
-        Print("Spread: ", spreadGlobal);
     }
 }
