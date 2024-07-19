@@ -21,7 +21,7 @@ bool isHasRunOnceGlobal = false;
 int totalPositionGlobal = 0;
 
 // Constants
-int DELAY_SECOND_CONSTANT = 30;
+int DELAY_SECOND_CONSTANT = 10;
 string BUY_TYPE_CONSTANT = "BUY";
 string SELL_TYPE_CONSTANT = "SELL";
 
