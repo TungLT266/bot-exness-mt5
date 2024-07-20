@@ -92,7 +92,7 @@ void SetTotalPositionArr()
         int totalPositionNew = GetTotalPositionByMagic3(magic3);
         if (totalPositionArrGlobal[i] != totalPositionNew)
         {
-            if (totalPositionArrGlobal[i] > totalPositionNew)
+            if (totalPositionArrGlobal[i] > 0 && totalPositionArrGlobal[i] > totalPositionNew)
             {
                 Print("Magic 3: ", magic3, " - Close all position.");
                 CloseAllPositionByMagic3(magic3);
