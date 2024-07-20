@@ -9,21 +9,27 @@
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/bot-dca/common/ModifyPositionTPSLAction.mqh>
 
 // Input
-extern ulong magicNumberInput;
+extern int magic2Input;
 extern bool isOnlyRunOnceInput;
 extern string symbolInput;
+extern int totalMagicInput;
 
 // Global
-double priceStartGlobal = 0;
-bool isTakeProfitBuyGlobal;
-bool isTradeBuyFirstGlobal;
 bool isHasRunOnceGlobal = false;
-int totalPositionGlobal = 0;
+int magic1Global = 666;
+
+int magic3ArrGlobal[];
+double slAmountArrGlobal[];
+double priceStartArrGlobal[];
+string takeProfitCurrentArrGlobal[];
+string takeProfitStartArrGlobal[];
+int totalPositionArrGlobal[];
 
 // Constants
 int DELAY_SECOND_CONSTANT = 10;
 string BUY_TYPE_CONSTANT = "BUY";
 string SELL_TYPE_CONSTANT = "SELL";
+string UNKNOWN_CONSTANT = "UNKNOWN";
 
 int OnInitFunction()
 {
@@ -36,9 +42,6 @@ int OnInitFunction()
 
     Print("Start bot");
     Print("Input: Is trade buy first: ", isTradeBuyFirstInput, " - Limit: ", limitGridInput, " - Is only run once: ", isOnlyRunOnceInput, " - SL: ", slAmountInput, " - TP: ", tpNumberInput, " - Volume: ", volumeInput, " - Magic: ", magicNumberInput);
-
-    isTradeBuyFirstGlobal = isTradeBuyFirstInput;
-    isTakeProfitBuyGlobal = isTradeBuyFirstInput;
 
     MainFunction();
 
@@ -53,7 +56,7 @@ void MainFunction()
 {
     if (GetTotalPosition() == 0)
     {
-        RemoveOrderAction();
+        RemoveOrderAll();
         if (isHasRunOnceGlobal && isOnlyRunOnceInput)
         {
             Print("Stop bot.");
@@ -63,6 +66,7 @@ void MainFunction()
     }
 
     RefreshGlobalVariable();
+    RemoveOrderAction();
     CreateOrderAction();
 
     RefreshGlobalVariable();
@@ -72,35 +76,30 @@ void MainFunction()
 
 void RefreshGlobalVariable()
 {
-    SetPriceStartAndIsTradeBuyFirst();
+    SetMagic3Arr();
+    SetTotalPositionArr();
+    SetMagicDependentArr();
+}
 
-    bool isTakeProfitBuyNew = GetIsTakeProfitBuy();
-    if (isTakeProfitBuyGlobal != isTakeProfitBuyNew)
-    {
-        isTakeProfitBuyGlobal = isTakeProfitBuyNew;
-        if (isTakeProfitBuyGlobal)
-        {
-            Print("Direction Up.");
-        }
-        else
-        {
-            Print("Direction Down.");
-        }
-    }
+void SetTotalPositionArr()
+{
+    int sizeNew = ArraySize(magic3ArrGlobal);
+    ArrayResize(totalPositionArrGlobal, sizeNew);
 
-    int totalPositionNew = GetTotalPosition();
-    if (totalPositionGlobal != totalPositionNew)
+    for (int i = 0; i < sizeNew; i++)
     {
-        Print("Total position: ", totalPositionNew);
-        if (totalPositionGlobal > totalPositionNew)
+        int magic3 = magic3ArrGlobal[i];
+        int totalPositionNew = GetTotalPositionByMagic3(magic3);
+        if (totalPositionArrGlobal[i] != totalPositionNew)
         {
-            Print("Close all position.");
-            CloseAllPosition();
-            totalPositionGlobal = 0;
-        }
-        else
-        {
-            totalPositionGlobal = totalPositionNew;
+            if (totalPositionArrGlobal[i] > totalPositionNew)
+            {
+                Print("Magic 3: ", magic3, " - Close all position.");
+                CloseAllPositionByMagic3(magic3);
+                totalPositionNew = 0;
+            }
+            totalPositionArrGlobal[i] = totalPositionNew;
+            Print("Magic 3: ", magic3, " - Total position: ", totalPositionNew);
         }
     }
 }

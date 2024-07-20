@@ -4,41 +4,49 @@
 #include <Trade/Trade.mqh>
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/bot-dca/common/CommonFunction.mqh>
 
-extern ulong magicNumberInput;
 extern int limitGridInput;
 
-extern double priceStartGlobal;
-extern bool isTakeProfitBuyGlobal;
+extern int magic3ArrGlobal[];
+extern string takeProfitCurrentArrGlobal[];
+extern string takeProfitStartArrGlobal[];
+extern int totalPositionArrGlobal[];
 
 void ModifyPositionTPSLAction()
 {
-   double tpNew = GetTP();
-   double slNew = GetSL();
-   int totalPositionMagic = GetTotalPosition();
+   for (int i = 0; i < ArraySize(magic3ArrGlobal); i++)
+   {
+      ModifyPositionTPSLByMagicOrdinal(i);
+   }
+}
 
-   int totalPosition = PositionsTotal();
-   for (int i = 0; i < totalPosition; i++)
+void ModifyPositionTPSLByMagicOrdinal(int magicOrdinal)
+{
+   int magic3 = magic3ArrGlobal[magicOrdinal];
+   double tpNew = GetTPByMagic3(magic3);
+   double slNew = GetSLByMagic3(magic3);
+
+   for (int i = 0; i < PositionsTotal(); i++)
    {
       ulong positionTicket = PositionGetTicket(i);
       ulong magic = PositionGetInteger(POSITION_MAGIC);
-      if (magic == magicNumberInput)
+      if (IsCorrectMagicByMagic3(magic, magic3))
       {
          ENUM_POSITION_TYPE type = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
          double tp = PositionGetDouble(POSITION_TP);
          double sl = PositionGetDouble(POSITION_SL);
 
-         if (totalPositionMagic >= limitGridInput)
+         if (totalPositionArrGlobal[magicOrdinal] >= limitGridInput)
          {
-            if (IsSameDirectionWithTakeProfit(type))
+            if (takeProfitStartArrGlobal[magicOrdinal] == takeProfitCurrentArrGlobal[magicOrdinal])
             {
-               if (compareDouble(tp, tpNew) != 0 || compareDouble(sl, slNew) != 0)
+               if (CompareDouble(tp, tpNew) != 0 || CompareDouble(sl, slNew) != 0)
                {
                   ModifyPositionTPSL(positionTicket, tpNew, slNew, type);
                }
             }
             else
             {
-               if (compareDouble(tp, slNew) != 0 || compareDouble(sl, tpNew) != 0)
+               if (CompareDouble(tp, slNew) != 0 || CompareDouble(sl, tpNew) != 0)
                {
                   ModifyPositionTPSL(positionTicket, slNew, tpNew, type);
                }
@@ -46,34 +54,22 @@ void ModifyPositionTPSLAction()
          }
          else
          {
-            if (IsSameDirectionWithTakeProfit(type))
+            if (takeProfitStartArrGlobal[magicOrdinal] == takeProfitCurrentArrGlobal[magicOrdinal])
             {
-               if (compareDouble(tp, tpNew) != 0 || compareDouble(sl, 0) != 0)
+               if (CompareDouble(tp, tpNew) != 0 || CompareDouble(sl, 0) != 0)
                {
                   ModifyPositionTPSL(positionTicket, tpNew, 0, type);
                }
             }
             else
             {
-               if (compareDouble(tp, 0) != 0 || compareDouble(sl, tpNew) != 0)
+               if (CompareDouble(tp, 0) != 0 || CompareDouble(sl, tpNew) != 0)
                {
                   ModifyPositionTPSL(positionTicket, 0, tpNew, type);
                }
             }
          }
       }
-   }
-}
-
-bool IsSameDirectionWithTakeProfit(ENUM_POSITION_TYPE type)
-{
-   if (isTakeProfitBuyGlobal)
-   {
-      return type == POSITION_TYPE_BUY;
-   }
-   else
-   {
-      return type == POSITION_TYPE_SELL;
    }
 }
 

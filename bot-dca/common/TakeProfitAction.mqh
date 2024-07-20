@@ -4,57 +4,61 @@
 #include <Trade/Trade.mqh>
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/bot-dca/common/CommonFunction.mqh>
 
-extern ulong magicNumberInput;
 extern int limitGridInput;
 
-extern double priceStartGlobal;
-extern bool isTakeProfitBuyGlobal;
-extern int totalPositionGlobal;
+extern int magic3ArrGlobal[];
+extern string takeProfitCurrentArrGlobal[];
+extern int totalPositionArrGlobal[];
+
+extern string BUY_TYPE_CONSTANT;
+extern string SELL_TYPE_CONSTANT;
 
 void TakeProfitAction()
 {
-   if (isTakeProfitBuyGlobal)
+   for (int i = 0; i < ArraySize(magic3ArrGlobal); i++)
    {
-      double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-      if (bidPrice >= GetTP())
+      int magic3 = magic3ArrGlobal[i];
+      if (takeProfitCurrentArrGlobal[i] == BUY_TYPE_CONSTANT)
       {
-         CloseAllPosition();
-      }
-
-      if (totalPositionGlobal >= limitGridInput)
-      {
-         if (bidPrice <= GetSL())
+         double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+         if (bidPrice >= GetTPByMagic3(magic3))
          {
-            CloseAllPosition();
+            CloseAllPositionByMagic3(magic3);
+         }
+         else if (totalPositionArrGlobal[i] >= limitGridInput)
+         {
+            if (bidPrice <= GetSLByMagic3(magic3))
+            {
+               CloseAllPositionByMagic3(magic3);
+            }
          }
       }
-   }
-   else
-   {
-      double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-      if (askPrice <= GetTP())
+      else
       {
-         CloseAllPosition();
-      }
-
-      if (totalPositionGlobal >= limitGridInput)
-      {
-         if (askPrice >= GetSL())
+         double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+         if (askPrice <= GetTPByMagic3(magic3))
          {
-            CloseAllPosition();
+            CloseAllPositionByMagic3(magic3);
+         }
+         else if (totalPositionArrGlobal[i] >= limitGridInput)
+         {
+            if (askPrice >= GetSLByMagic3(magic3))
+            {
+               CloseAllPositionByMagic3(magic3);
+            }
          }
       }
    }
 }
 
-void CloseAllPosition()
+void CloseAllPositionByMagic3(int magic3)
 {
    int totalPosition = PositionsTotal();
    for (int i = totalPosition - 1; i >= 0; i--)
    {
       ulong positionTicket = PositionGetTicket(i);
       ulong magic = PositionGetInteger(POSITION_MAGIC);
-      if (magic == magicNumberInput)
+      if (IsCorrectMagicByMagic3(magic, magic3))
       {
          ClosePosition(positionTicket);
       }
