@@ -9,8 +9,6 @@ extern int tpNumberInput;
 
 extern int magic1Global;
 
-extern MagicDetailObject magicDetailArrGlobal[];
-
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
 
