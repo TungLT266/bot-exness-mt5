@@ -71,12 +71,14 @@ void createOrder(int gridNo, string typeStr)
 
    ENUM_ORDER_TYPE type;
    double tp;
+   double sl;
 
    double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
    double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
    if (typeStr == BUY_TYPE_CONSTANT)
    {
       tp = price + gridAmountInput;
+      sl = GetSLDown();
       if (CompareDouble(price, askPrice) > 0)
       {
          type = ORDER_TYPE_BUY_STOP;
@@ -89,6 +91,7 @@ void createOrder(int gridNo, string typeStr)
    else if (typeStr == SELL_TYPE_CONSTANT)
    {
       tp = price - gridAmountInput;
+      sl = GetSLUp();
       if (CompareDouble(price, bidPrice) < 0)
       {
          type = ORDER_TYPE_SELL_STOP;
@@ -119,16 +122,17 @@ void createOrder(int gridNo, string typeStr)
    request.volume = volumeInput;
    request.type = type;
    request.tp = tp;
+   request.sl = sl;
    request.price = price;
    request.comment = IntegerToString(gridNo);
    request.magic = magicNoGlobal;
 
    if (OrderSend(request, result))
    {
-      Print("Create order success: Type: ", EnumToString(type), " - Ticket: ", result.order, " - Grid No: ", gridNo, " - Price: ", price);
+      Print("Create order success: Type: ", EnumToString(type), " - Ticket: ", result.order, " - Grid No: ", gridNo, " - Price: ", price, " - TP: ", tp, " - SL: ", sl);
    }
    else
    {
-      Print("Create order failure: Type: ", EnumToString(type), " - Comment: ", result.comment, " - Grid No: ", gridNo, " - Price: ", price);
+      Print("Create order failure: Type: ", EnumToString(type), " - Comment: ", result.comment, " - Grid No: ", gridNo, " - Price: ", price, " - TP: ", tp, " - SL: ", sl);
    }
 }

@@ -3,6 +3,8 @@
 
 extern int magic2Input;
 extern double gridAmountInput;
+extern double slGridAmountInput;
+extern int totalGridInput;
 
 extern int magic1Global;
 extern ulong magicNoGlobal;
@@ -110,4 +112,14 @@ double GetPriceMinGrid(double price)
 double GetPriceMaxGrid(double price)
 {
     return price + (gridAmountInput / 2);
+}
+
+double GetSLUp()
+{
+    return priceStartGridGlobal + (gridAmountInput * (totalGridInput - 1)) + slGridAmountInput;
+}
+
+double GetSLDown()
+{
+    return priceStartGridGlobal - slGridAmountInput;
 }
