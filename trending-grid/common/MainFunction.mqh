@@ -3,6 +3,7 @@
 
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trending-grid/common/CreateValueGlobal.mqh>
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trending-grid/common/CommonFunction.mqh>
+#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trending-grid/common/CreateOrderAction.mqh>
 
 // Input
 extern double priceCenterInput;
@@ -39,6 +40,7 @@ int OnInitFunction()
 void MainFunction()
 {
     RefreshGlobalVariable();
+    CreateOrderAction();
 }
 
 void RefreshGlobalVariable()

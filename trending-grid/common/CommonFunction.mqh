@@ -2,12 +2,20 @@
 #property link "https://www.mql5.com"
 
 extern int magic2Input;
+extern double gridAmountInput;
 
 extern int magic1Global;
 extern ulong magicNoGlobal;
+extern double priceStartGridGlobal;
 
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
+extern string UNKNOWN_CONSTANT;
+
+double GetPriceByGridNo(int gridNo)
+{
+    return priceStartGridGlobal + ((gridNo - 1) * gridAmountInput);
+}
 
 string GetPositionTypeStr(ENUM_POSITION_TYPE type)
 {
@@ -15,10 +23,24 @@ string GetPositionTypeStr(ENUM_POSITION_TYPE type)
     {
         return BUY_TYPE_CONSTANT;
     }
-    else
+    else if (type == POSITION_TYPE_SELL)
     {
         return SELL_TYPE_CONSTANT;
     }
+    return UNKNOWN_CONSTANT;
+}
+
+string GetOrderTypeStr(ENUM_ORDER_TYPE type)
+{
+    if (type == ORDER_TYPE_BUY_LIMIT || type == ORDER_TYPE_BUY_STOP)
+    {
+        return BUY_TYPE_CONSTANT;
+    }
+    else if (type == ORDER_TYPE_SELL_LIMIT || type == ORDER_TYPE_SELL_STOP)
+    {
+        return SELL_TYPE_CONSTANT;
+    }
+    return UNKNOWN_CONSTANT;
 }
 
 int GetGridNoByComment(string comment)
@@ -78,4 +100,14 @@ int GetTotalOrder()
         }
     }
     return result;
+}
+
+double GetPriceMinGrid(double price)
+{
+    return price - (gridAmountInput / 2);
+}
+
+double GetPriceMaxGrid(double price)
+{
+    return price + (gridAmountInput / 2);
 }
