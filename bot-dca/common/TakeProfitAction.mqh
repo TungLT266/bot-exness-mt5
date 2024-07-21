@@ -22,13 +22,13 @@ void TakeProfitAction()
          double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
          if (bidPrice >= GetTPByMagicDetail(magicDetail))
          {
-            CloseAllPositionByMagic3(magicDetail.magic3);
+            CloseAllPositionByMagicNo(magicDetail.magicNo);
          }
          else if (magicDetail.totalPosition >= limitGridInput)
          {
             if (bidPrice <= GetSLByMagicDetail(magicDetail))
             {
-               CloseAllPositionByMagic3(magicDetail.magic3);
+               CloseAllPositionByMagicNo(magicDetail.magicNo);
             }
          }
       }
@@ -37,27 +37,26 @@ void TakeProfitAction()
          double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
          if (askPrice <= GetTPByMagicDetail(magicDetail))
          {
-            CloseAllPositionByMagic3(magicDetail.magic3);
+            CloseAllPositionByMagicNo(magicDetail.magicNo);
          }
          else if (magicDetail.totalPosition >= limitGridInput)
          {
             if (askPrice >= GetSLByMagicDetail(magicDetail))
             {
-               CloseAllPositionByMagic3(magicDetail.magic3);
+               CloseAllPositionByMagicNo(magicDetail.magicNo);
             }
          }
       }
    }
 }
 
-void CloseAllPositionByMagic3(int magic3)
+void CloseAllPositionByMagicNo(ulong magicNo)
 {
    int totalPosition = PositionsTotal();
    for (int i = totalPosition - 1; i >= 0; i--)
    {
       ulong positionTicket = PositionGetTicket(i);
-      ulong magic = PositionGetInteger(POSITION_MAGIC);
-      if (IsCorrectMagicByMagic3(magic, magic3))
+      if (PositionGetInteger(POSITION_MAGIC) == magicNo)
       {
          ClosePosition(positionTicket);
       }

@@ -5,7 +5,7 @@ extern string UNKNOWN_CONSTANT;
 
 struct MagicDetailObject
 {
-    int magic3;
+    ulong magicNo;
     double slAmount;
     double priceStart;
     string takeProfitCurrent;
@@ -16,7 +16,7 @@ struct MagicDetailObject
 MagicDetailObject GetDefaultMagicDetailObject()
 {
     MagicDetailObject result;
-    result.magic3 = 0;
+    result.magicNo = 0;
     result.slAmount = 0;
     result.priceStart = 0;
     result.takeProfitCurrent = UNKNOWN_CONSTANT;
@@ -49,7 +49,7 @@ bool IsEqualArrMagicDetail(MagicDetailObject &arr1[], MagicDetailObject &arr2[])
         MagicDetailObject value1 = arr1[i];
         MagicDetailObject value2 = arr2[i];
 
-        if (value1.magic3 != value2.magic3)
+        if (value1.magicNo != value2.magicNo)
         {
             return false;
         }
@@ -77,12 +77,12 @@ bool IsEqualArrMagicDetail(MagicDetailObject &arr1[], MagicDetailObject &arr2[])
     return true;
 }
 
-bool IsExitsMagicDetailByMagic3(MagicDetailObject &arr[], int magic3)
+bool IsExitsMagicDetailByMagicNo(MagicDetailObject &arr[], ulong magicNo)
 {
     for (int i = 0; i < ArraySize(arr); i++)
     {
         MagicDetailObject magicDetail = arr[i];
-        if (magicDetail.magic3 == magic3)
+        if (magicDetail.magicNo == magicNo)
         {
             return true;
         }
@@ -98,12 +98,12 @@ int AddArrValueMagicDetail(MagicDetailObject &arr[], MagicDetailObject &value)
     return ordinal + 1;
 }
 
-MagicDetailObject GetMagicDetailByMagic3(MagicDetailObject &arr[], int magic3)
+MagicDetailObject GetMagicDetailByMagicNo(MagicDetailObject &arr[], ulong magicNo)
 {
     for (int i = 0; i < ArraySize(arr); i++)
     {
         MagicDetailObject magicDetail = arr[i];
-        if (magicDetail.magic3 == magic3)
+        if (magicDetail.magicNo == magicNo)
         {
             return magicDetail;
         }

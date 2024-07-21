@@ -31,7 +31,7 @@ void CreateOrderAfterFirst()
       MagicDetailObject magicDetail = magicDetailArrGlobal[i];
       if (magicDetail.totalPosition > 0 && magicDetail.totalPosition < limitGridInput)
       {
-         if (GetTotalOrderByMagic3(magicDetail.magic3) == 0)
+         if (GetTotalOrderByMagicNo(magicDetail.magicNo) == 0)
          {
             CreateOrder(magicDetail.totalPosition + 1, magicDetail);
          }
@@ -47,7 +47,7 @@ int GetMagic3OrderFirst()
    }
    for (int i = 1; i <= 9; i++)
    {
-      if (!IsExitsMagicDetailByMagic3(magicDetailArrGlobal, i))
+      if (!IsExitsMagicDetailByMagicNo(magicDetailArrGlobal, GetMagicNumber(i)))
       {
          return i;
       }
@@ -98,7 +98,6 @@ void CreateOrderFirst()
 
 void CreateOrder(int gridNo, MagicDetailObject &magicDetail)
 {
-   ulong magic = GetMagicNumber(magicDetail.magic3);
    ENUM_ORDER_TYPE orderType = GetTypeOrderByMagic3(magicDetail.takeProfitCurrent);
 
    MqlTradeRequest request;
@@ -107,19 +106,19 @@ void CreateOrder(int gridNo, MagicDetailObject &magicDetail)
    ZeroMemory(request);
    request.action = TRADE_ACTION_PENDING;
    request.symbol = _Symbol;
-   request.volume = GetVolumeOrderByMagic3(magicDetail.magic3);
+   request.volume = GetVolumeOrderByMagicNo(magicDetail.magicNo);
    request.type = orderType;
    request.price = GetSLByMagicDetail(magicDetail);
    request.comment = IntegerToString(gridNo);
-   request.magic = magic;
+   request.magic = magicDetail.magicNo;
 
    if (OrderSend(request, result))
    {
-      Print("Create order success: Type: ", EnumToString(orderType), " - Ticket: ", result.order, " - No: ", gridNo, " - Magic: ", magic);
+      Print("Create order success: Type: ", EnumToString(orderType), " - Ticket: ", result.order, " - No: ", gridNo, " - Magic: ", magicDetail.magicNo);
    }
    else
    {
-      Print("Create order failure: Type: ", EnumToString(orderType), " - Comment: ", result.comment, " - No: ", gridNo, " - Magic: ", magic);
+      Print("Create order failure: Type: ", EnumToString(orderType), " - Comment: ", result.comment, " - No: ", gridNo, " - Magic: ", magicDetail.magicNo);
    }
 }
 
@@ -135,7 +134,7 @@ ENUM_ORDER_TYPE GetTypeOrderByMagic3(string takeProfitCurrent)
    }
 }
 
-double GetVolumeOrderByMagic3(int magic3)
+double GetVolumeOrderByMagicNo(ulong magicNo)
 {
    double totalVolumeBuy = 0;
    double totalVolumeSell = 0;
@@ -143,7 +142,7 @@ double GetVolumeOrderByMagic3(int magic3)
    for (int i = 0; i < PositionsTotal(); i++)
    {
       ulong positionTicket = PositionGetTicket(i);
-      if (IsCorrectMagicByMagic3(PositionGetInteger(POSITION_MAGIC), magic3))
+      if (PositionGetInteger(POSITION_MAGIC) == magicNo)
       {
          ENUM_POSITION_TYPE type = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
          if (type == POSITION_TYPE_BUY)

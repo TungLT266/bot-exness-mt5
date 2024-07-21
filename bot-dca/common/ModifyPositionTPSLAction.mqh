@@ -25,8 +25,7 @@ void ModifyPositionTPSLByMagicDetail(MagicDetailObject &magicDetail)
    for (int i = 0; i < PositionsTotal(); i++)
    {
       ulong positionTicket = PositionGetTicket(i);
-      ulong magic = PositionGetInteger(POSITION_MAGIC);
-      if (IsCorrectMagicByMagic3(magic, magicDetail.magic3))
+      if (PositionGetInteger(POSITION_MAGIC) == magicDetail.magicNo)
       {
          ENUM_POSITION_TYPE type = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
          double tp = PositionGetDouble(POSITION_TP);

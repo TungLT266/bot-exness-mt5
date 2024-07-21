@@ -10,9 +10,9 @@ void RemoveOrderAction()
    for (int i = 0; i < ArraySize(magicDetailArrGlobal); i++)
    {
       MagicDetailObject magicDetail = magicDetailArrGlobal[i];
-      if (GetTotalPositionByMagic3(magicDetail.magic3) == 0)
+      if (GetTotalPositionByMagicNo(magicDetail.magicNo) == 0)
       {
-         RemoveOrderByMagic3(magicDetail.magic3);
+         RemoveOrderByMagicNo(magicDetail.magicNo);
       }
    }
 }
@@ -31,14 +31,13 @@ void RemoveOrderAll()
    }
 }
 
-void RemoveOrderByMagic3(int magic3)
+void RemoveOrderByMagicNo(ulong magicNo)
 {
    int total = OrdersTotal();
    for (int i = total - 1; i >= 0; i--)
    {
       ulong orderTicket = OrderGetTicket(i);
-      ulong magic = OrderGetInteger(ORDER_MAGIC);
-      if (IsCorrectMagicByMagic3(magic, magic3))
+      if (OrderGetInteger(ORDER_MAGIC) == magicNo)
       {
          RemoveOrderByTicket(orderTicket);
       }

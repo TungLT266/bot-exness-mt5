@@ -18,16 +18,15 @@ void SetValueForMagicDetail(MagicDetailObject &magicDetailArrNew[])
       ulong magic = PositionGetInteger(POSITION_MAGIC);
       if (IsCorrectMagic(magic))
       {
-         int magic3 = GetMagic3ByMagic(magic);
-         if (!IsExitsMagicDetailByMagic3(magicDetailArrNew, magic3))
+         if (!IsExitsMagicDetailByMagicNo(magicDetailArrNew, magic))
          {
             MagicDetailObject magicDetailNew = GetDefaultMagicDetailObject();
-            magicDetailNew.magic3 = magic3;
-            magicDetailNew.totalPosition = GetTotalPositionByMagic3(magic3);
+            magicDetailNew.magicNo = magic;
+            magicDetailNew.totalPosition = GetTotalPositionByMagicNo(magic);
             SetSLAmountByMagicDetail(magicDetailNew);
-            magicDetailNew.priceStart = GetPriceStartByMagic3(magic3);
-            magicDetailNew.takeProfitCurrent = GetTakeProfitCurrentByMagic3(magic3);
-            magicDetailNew.takeProfitStart = GetTakeProfitStartByMagic3(magic3);
+            magicDetailNew.priceStart = GetPriceStartByMagicNo(magic);
+            magicDetailNew.takeProfitCurrent = GetTakeProfitCurrentByMagicNo(magic);
+            magicDetailNew.takeProfitStart = GetTakeProfitStartByMagicNo(magic);
 
             AddArrValueMagicDetail(magicDetailArrNew, magicDetailNew);
          }
@@ -35,12 +34,12 @@ void SetValueForMagicDetail(MagicDetailObject &magicDetailArrNew[])
    }
 }
 
-string GetTakeProfitStartByMagic3(int magic3)
+string GetTakeProfitStartByMagicNo(ulong magicNo)
 {
    for (int i = 0; i < PositionsTotal(); i++)
    {
       ulong positionTicket = PositionGetTicket(i);
-      if (IsCorrectMagicByMagic3(PositionGetInteger(POSITION_MAGIC), magic3))
+      if (PositionGetInteger(POSITION_MAGIC) == magicNo)
       {
          int gridNo = GetGridNoByComment(PositionGetString(POSITION_COMMENT));
          if (gridNo == 1)
@@ -59,14 +58,14 @@ string GetTakeProfitStartByMagic3(int magic3)
    return UNKNOWN_CONSTANT;
 }
 
-string GetTakeProfitCurrentByMagic3(int magic3)
+string GetTakeProfitCurrentByMagicNo(ulong magicNo)
 {
    int gridNoMax = 0;
    ENUM_POSITION_TYPE positionTypeAtGridMax = POSITION_TYPE_BUY;
    for (int i = 0; i < PositionsTotal(); i++)
    {
       ulong positionTicket = PositionGetTicket(i);
-      if (IsCorrectMagicByMagic3(PositionGetInteger(POSITION_MAGIC), magic3))
+      if (PositionGetInteger(POSITION_MAGIC) == magicNo)
       {
          int gridNo = GetGridNoByComment(PositionGetString(POSITION_COMMENT));
          if (gridNo > gridNoMax)
@@ -90,12 +89,12 @@ string GetTakeProfitCurrentByMagic3(int magic3)
    return UNKNOWN_CONSTANT;
 }
 
-double GetPriceStartByMagic3(int magic3)
+double GetPriceStartByMagicNo(ulong magicNo)
 {
    for (int i = 0; i < PositionsTotal(); i++)
    {
       ulong positionTicket = PositionGetTicket(i);
-      if (IsCorrectMagicByMagic3(PositionGetInteger(POSITION_MAGIC), magic3))
+      if (PositionGetInteger(POSITION_MAGIC) == magicNo)
       {
          int gridNo = GetGridNoByComment(PositionGetString(POSITION_COMMENT));
          if (gridNo == 1)
@@ -120,7 +119,7 @@ void SetSLAmountByMagicDetail(MagicDetailObject &magicDetail)
    for (int i = 0; i < PositionsTotal(); i++)
    {
       ulong positionTicket = PositionGetTicket(i);
-      if (IsCorrectMagicByMagic3(PositionGetInteger(POSITION_MAGIC), magicDetail.magic3))
+      if (PositionGetInteger(POSITION_MAGIC) == magicDetail.magicNo)
       {
          int gridNo = GetGridNoByComment(PositionGetString(POSITION_COMMENT));
          if (gridNo == 1)

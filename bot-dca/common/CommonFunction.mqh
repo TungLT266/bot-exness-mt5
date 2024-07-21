@@ -34,17 +34,6 @@ bool IsCorrectMagic(ulong magic)
     return StringSubstr(magicStr, 0, StringLen(magicStr) - 1) == GetMagic1And2Str();
 }
 
-int GetMagic3ByMagic(ulong magic)
-{
-    string magicStr = IntegerToString(magic);
-    return (int)StringToInteger(StringSubstr(magicStr, StringLen(magicStr) - 1));
-}
-
-bool IsCorrectMagicByMagic3(ulong magic, int magic3)
-{
-    return magic == GetMagicNumber(magic3);
-}
-
 int GetTotalPosition()
 {
     int result = 0;
@@ -60,13 +49,13 @@ int GetTotalPosition()
     return result;
 }
 
-int GetTotalPositionByMagic3(int magic3)
+int GetTotalPositionByMagicNo(ulong magicNo)
 {
     int result = 0;
     for (int i = 0; i < PositionsTotal(); i++)
     {
         ulong positionTicket = PositionGetTicket(i);
-        if (IsCorrectMagicByMagic3(PositionGetInteger(POSITION_MAGIC), magic3))
+        if (PositionGetInteger(POSITION_MAGIC) == magicNo)
         {
             result++;
         }
@@ -93,13 +82,13 @@ int CompareDouble(double value1, double value2)
     return 0;
 }
 
-int GetTotalOrderByMagic3(int magic3)
+int GetTotalOrderByMagicNo(ulong magicNo)
 {
     int result = 0;
     for (int i = 0; i < OrdersTotal(); i++)
     {
         ulong ticket = OrderGetTicket(i);
-        if (IsCorrectMagicByMagic3(OrderGetInteger(ORDER_MAGIC), magic3))
+        if (OrderGetInteger(ORDER_MAGIC) == magicNo)
         {
             result++;
         }

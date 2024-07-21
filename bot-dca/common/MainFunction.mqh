@@ -84,12 +84,12 @@ void SetMagicDetailArr()
     for (int i = 0; i < ArraySize(magicDetailArrNew); i++)
     {
         MagicDetailObject magicDetailNew = magicDetailArrNew[i];
-        MagicDetailObject magicDetailOld = GetMagicDetailByMagic3(magicDetailArrGlobal, magicDetailNew.magic3);
+        MagicDetailObject magicDetailOld = GetMagicDetailByMagicNo(magicDetailArrGlobal, magicDetailNew.magicNo);
 
         if (magicDetailOld.totalPosition > 0 && magicDetailOld.totalPosition > magicDetailNew.totalPosition)
         {
-            Print("Magic 3: ", magicDetailNew.magic3, " - Close all position.");
-            CloseAllPositionByMagic3(magicDetailNew.magic3);
+            Print("Magic: ", magicDetailNew.magicNo, " - Close all position.");
+            CloseAllPositionByMagicNo(magicDetailNew.magicNo);
             magicDetailNew.totalPosition = 0;
         }
     }
