@@ -26,7 +26,8 @@ string UNKNOWN_CONSTANT = "UNKNOWN";
 int OnInitFunction()
 {
     Print("Start bot");
-    Print("Input: Price center: ", priceCenterInput, " - Grid amount: ", gridAmountInput, " - SL Grid: ", slGridAmountInput, " - Total grid: ", totalGridInput, " - Volume: ", volumeInput);
+    magicNoGlobal = GetMagicNo();
+    Print("Input: Price center: ", priceCenterInput, " - Grid amount: ", gridAmountInput, " - SL Grid: ", slGridAmountInput, " - Total grid: ", totalGridInput, " - Volume: ", volumeInput, " - Magic:", magicNoGlobal);
 
     MainFunction();
 
