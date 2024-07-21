@@ -74,14 +74,14 @@ int GetTotalPosition()
 // if value1 < value2 -> return -1
 int CompareDouble(double value1, double value2)
 {
-    int value1Int = (int)MathRound(value1 * 100000);
-    int value2Int = (int)MathRound(value2 * 100000);
+    long value1Long = (long)MathRound(value1 * 100000);
+    long value2Long = (long)MathRound(value2 * 100000);
 
-    if (value1Int > value2Int)
+    if (value1Long > value2Long)
     {
         return 1;
     }
-    else if (value1Int < value2Int)
+    else if (value1Long < value2Long)
     {
         return -1;
     }

@@ -71,8 +71,8 @@ void createOrder(int gridNo, string typeStr)
 
    ENUM_ORDER_TYPE type;
 
-   double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
    double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+   double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
    if (typeStr == BUY_TYPE_CONSTANT)
    {
       if (CompareDouble(price, askPrice) > 0)
