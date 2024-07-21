@@ -33,7 +33,7 @@ void ModifyPositionTPSLByMagicDetail(MagicDetailObject &magicDetail)
 
          if (magicDetail.totalPosition >= limitGridInput)
          {
-            if (magicDetail.takeProfitStart == magicDetail.takeProfitCurrent)
+            if (GetPositionTypeStr(type) == magicDetail.takeProfitCurrent)
             {
                if (CompareDouble(tp, tpNew) != 0 || CompareDouble(sl, slNew) != 0)
                {
@@ -50,7 +50,7 @@ void ModifyPositionTPSLByMagicDetail(MagicDetailObject &magicDetail)
          }
          else
          {
-            if (magicDetail.takeProfitStart == magicDetail.takeProfitCurrent)
+            if (GetPositionTypeStr(type) == magicDetail.takeProfitCurrent)
             {
                if (CompareDouble(tp, tpNew) != 0 || CompareDouble(sl, 0) != 0)
                {

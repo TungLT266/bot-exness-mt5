@@ -12,6 +12,18 @@ extern int magic1Global;
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
 
+string GetPositionTypeStr(ENUM_POSITION_TYPE type)
+{
+    if (type == POSITION_TYPE_BUY)
+    {
+        return BUY_TYPE_CONSTANT;
+    }
+    else
+    {
+        return SELL_TYPE_CONSTANT;
+    }
+}
+
 int GetGridNoByComment(string comment)
 {
     return (int)StringToInteger(comment);
