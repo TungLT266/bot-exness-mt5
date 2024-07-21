@@ -42,57 +42,9 @@ int GetMagic3ByMagic(ulong magic)
     return (int)StringToInteger(StringSubstr(magicStr, StringLen(magicStr) - 1));
 }
 
-void CopyArrInt(int &source[], int &taget[])
-{
-    int size = ArraySize(source);
-    ArrayResize(taget, size);
-    for (int i = 0; i < size; i++)
-    {
-        taget[i] = source[i];
-    }
-}
-
 bool IsCorrectMagicByMagic3(ulong magic, int magic3)
 {
     return magic == GetMagicNumber(magic3);
-}
-
-int AddArrValueInt(int &arr[], int value)
-{
-    int ordinal = ArraySize(arr);
-    ArrayResize(arr, ordinal + 1);
-    arr[ordinal] = value;
-    return ordinal + 1;
-}
-
-bool IsEqualArrInt(int &arr1[], int &arr2[])
-{
-    int size1 = ArraySize(arr1);
-    int size2 = ArraySize(arr2);
-    if (size1 != size2)
-    {
-        return false;
-    }
-    for (int i = 0; i < size1; i++)
-    {
-        if (arr1[i] != arr2[i])
-        {
-            return false;
-        }
-    }
-    return true;
-}
-
-bool IsContainsValueInt(int &arr[], int value)
-{
-    for (int i = 0; i < ArraySize(arr); i++)
-    {
-        if (arr[i] == value)
-        {
-            return true;
-        }
-    }
-    return false;
 }
 
 int GetTotalPosition()
