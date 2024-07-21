@@ -14,6 +14,7 @@ extern int magic2Input;
 extern bool isOnlyRunOnceInput;
 extern string symbolInput;
 extern int totalMagicInput;
+extern string takeProfitFirstInput;
 
 // Global
 bool isHasRunOnceGlobal = false;
@@ -31,13 +32,20 @@ int OnInitFunction()
 {
     if (symbolInput != _Symbol)
     {
-        Print("Symbol invalid.");
+        Print("Symbol is invalid.");
+        ExpertRemove();
+        return (INIT_SUCCEEDED);
+    }
+
+    if (takeProfitFirstInput != BUY_TYPE_CONSTANT && takeProfitFirstInput != SELL_TYPE_CONSTANT)
+    {
+        Print("Take profit first is invalid.");
         ExpertRemove();
         return (INIT_SUCCEEDED);
     }
 
     Print("Start bot");
-    Print("Input: Is trade buy first: ", isTradeBuyFirstInput, " - Limit: ", limitGridInput, " - Is only run once: ", isOnlyRunOnceInput, " - SL: ", slAmountInput, " - TP: ", tpNumberInput, " - Volume: ", volumeInput, " - Magic: ", GetMagic1And2Str());
+    Print("Input: Take profit first: ", takeProfitFirstInput, " - Limit: ", limitGridInput, " - Is only run once: ", isOnlyRunOnceInput, " - SL: ", slAmountInput, " - TP: ", tpNumberInput, " - Volume: ", volumeInput, " - Magic: ", GetMagic1And2Str());
 
     MainFunction();
 

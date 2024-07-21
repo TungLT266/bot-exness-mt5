@@ -7,7 +7,7 @@
 extern double volumeInput;
 extern int limitGridInput;
 extern int totalMagicInput;
-extern bool isTradeBuyFirstInput;
+extern string takeProfitFirstInput;
 
 extern MagicDetailObject magicDetailArrGlobal[];
 
@@ -64,7 +64,7 @@ void CreateOrderFirst()
       return;
    }
    ENUM_ORDER_TYPE orderType;
-   if (isTradeBuyFirstInput)
+   if (takeProfitFirstInput == BUY_TYPE_CONSTANT)
    {
       orderType = ORDER_TYPE_BUY;
    }
