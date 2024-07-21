@@ -1,18 +1,15 @@
 #property copyright "Copyright 2024, MetaQuotes Ltd."
 #property link "https://www.mql5.com"
 
+#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/bot-dca/common/MagicDetailObject.mqh>
+
 extern int magic2Input;
 extern int tpNumberFirstInput;
 extern int tpNumberInput;
 
 extern int magic1Global;
 
-extern int magic3ArrGlobal[];
-extern double priceStartArrGlobal[];
-extern string takeProfitCurrentArrGlobal[];
-extern string takeProfitStartArrGlobal[];
-extern int totalPositionArrGlobal[];
-extern double slAmountArrGlobal[];
+extern MagicDetailObject magicDetailArrGlobal[];
 
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
@@ -58,18 +55,6 @@ void CopyArrInt(int &source[], int &taget[])
 bool IsCorrectMagicByMagic3(ulong magic, int magic3)
 {
     return magic == GetMagicNumber(magic3);
-}
-
-int GetMagicOrdinalByMagic3(int magic3)
-{
-    for (int i = 0; i < ArraySize(magic3ArrGlobal); i++)
-    {
-        if (magic3ArrGlobal[i] == magic3)
-        {
-            return i;
-        }
-    }
-    return -1;
 }
 
 int AddArrValueInt(int &arr[], int value)
@@ -161,8 +146,7 @@ int CompareDouble(double value1, double value2)
 int GetTotalOrderByMagic3(int magic3)
 {
     int result = 0;
-    int totalOrder = OrdersTotal();
-    for (int i = 0; i < totalOrder; i++)
+    for (int i = 0; i < OrdersTotal(); i++)
     {
         ulong ticket = OrderGetTicket(i);
         if (IsCorrectMagicByMagic3(OrderGetInteger(ORDER_MAGIC), magic3))
@@ -173,46 +157,43 @@ int GetTotalOrderByMagic3(int magic3)
     return result;
 }
 
-double GetSLByMagic3(int magic3)
+double GetSLByMagicDetail(MagicDetailObject &magicDetail)
 {
-    int magicOrdinal = GetMagicOrdinalByMagic3(magic3);
-    if (takeProfitStartArrGlobal[magicOrdinal] == BUY_TYPE_CONSTANT && takeProfitCurrentArrGlobal[magicOrdinal] == BUY_TYPE_CONSTANT)
+    if (magicDetail.takeProfitStart == BUY_TYPE_CONSTANT && magicDetail.takeProfitCurrent == BUY_TYPE_CONSTANT)
     {
-        return priceStartArrGlobal[magicOrdinal] - slAmountArrGlobal[magicOrdinal];
+        return magicDetail.priceStart - magicDetail.slAmount;
     }
-    else if (takeProfitStartArrGlobal[magicOrdinal] == SELL_TYPE_CONSTANT && takeProfitCurrentArrGlobal[magicOrdinal] == SELL_TYPE_CONSTANT)
+    else if (magicDetail.takeProfitStart == SELL_TYPE_CONSTANT && magicDetail.takeProfitCurrent == SELL_TYPE_CONSTANT)
     {
-        return priceStartArrGlobal[magicOrdinal] + slAmountArrGlobal[magicOrdinal];
+        return magicDetail.priceStart + magicDetail.slAmount;
     }
-    return priceStartArrGlobal[magicOrdinal];
+    return magicDetail.priceStart;
 }
 
-double GetTPByMagic3(int magic3)
+double GetTPByMagicDetail(MagicDetailObject &magicDetail)
 {
-    int magicOrdinal = GetMagicOrdinalByMagic3(magic3);
-    double priceStart = priceStartArrGlobal[magicOrdinal];
-    if (takeProfitStartArrGlobal[magicOrdinal] == BUY_TYPE_CONSTANT)
+    if (magicDetail.takeProfitStart == BUY_TYPE_CONSTANT)
     {
-        if (totalPositionArrGlobal[magicOrdinal] == 1)
+        if (magicDetail.totalPosition == 1)
         {
-            return priceStart + (slAmountArrGlobal[magicOrdinal] * tpNumberFirstInput);
+            return magicDetail.priceStart + (magicDetail.slAmount * tpNumberFirstInput);
         }
-        else if (takeProfitCurrentArrGlobal[magicOrdinal] == BUY_TYPE_CONSTANT)
+        else if (magicDetail.takeProfitCurrent == BUY_TYPE_CONSTANT)
         {
-            return priceStart + (slAmountArrGlobal[magicOrdinal] * tpNumberInput);
+            return magicDetail.priceStart + (magicDetail.slAmount * tpNumberInput);
         }
-        return priceStart - (slAmountArrGlobal[magicOrdinal] * (tpNumberInput + 1));
+        return magicDetail.priceStart - (magicDetail.slAmount * (tpNumberInput + 1));
     }
     else
     {
-        if (totalPositionArrGlobal[magicOrdinal] == 1)
+        if (magicDetail.totalPosition == 1)
         {
-            return priceStart - (slAmountArrGlobal[magicOrdinal] * tpNumberFirstInput);
+            return magicDetail.priceStart - (magicDetail.slAmount * tpNumberFirstInput);
         }
-        else if (takeProfitCurrentArrGlobal[magicOrdinal] == SELL_TYPE_CONSTANT)
+        else if (magicDetail.takeProfitCurrent == SELL_TYPE_CONSTANT)
         {
-            return priceStart - (slAmountArrGlobal[magicOrdinal] * tpNumberInput);
+            return magicDetail.priceStart - (magicDetail.slAmount * tpNumberInput);
         }
-        return priceStart + (slAmountArrGlobal[magicOrdinal] * (tpNumberInput + 1));
+        return magicDetail.priceStart + (magicDetail.slAmount * (tpNumberInput + 1));
     }
 }

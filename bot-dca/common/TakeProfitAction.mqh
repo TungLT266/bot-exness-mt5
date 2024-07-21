@@ -6,45 +6,44 @@
 
 extern int limitGridInput;
 
-extern int magic3ArrGlobal[];
-extern string takeProfitCurrentArrGlobal[];
-extern int totalPositionArrGlobal[];
+extern MagicDetailObject magicDetailArrGlobal[];
 
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
 
 void TakeProfitAction()
 {
-   for (int i = 0; i < ArraySize(magic3ArrGlobal); i++)
+   for (int i = 0; i < ArraySize(magicDetailArrGlobal); i++)
    {
-      int magic3 = magic3ArrGlobal[i];
-      if (takeProfitCurrentArrGlobal[i] == BUY_TYPE_CONSTANT)
+      MagicDetailObject magicDetail = magicDetailArrGlobal[i];
+
+      if (magicDetail.takeProfitCurrent == BUY_TYPE_CONSTANT)
       {
          double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-         if (bidPrice >= GetTPByMagic3(magic3))
+         if (bidPrice >= GetTPByMagicDetail(magicDetail))
          {
-            CloseAllPositionByMagic3(magic3);
+            CloseAllPositionByMagic3(magicDetail.magic3);
          }
-         else if (totalPositionArrGlobal[i] >= limitGridInput)
+         else if (magicDetail.totalPosition >= limitGridInput)
          {
-            if (bidPrice <= GetSLByMagic3(magic3))
+            if (bidPrice <= GetSLByMagicDetail(magicDetail))
             {
-               CloseAllPositionByMagic3(magic3);
+               CloseAllPositionByMagic3(magicDetail.magic3);
             }
          }
       }
       else
       {
          double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-         if (askPrice <= GetTPByMagic3(magic3))
+         if (askPrice <= GetTPByMagicDetail(magicDetail))
          {
-            CloseAllPositionByMagic3(magic3);
+            CloseAllPositionByMagic3(magicDetail.magic3);
          }
-         else if (totalPositionArrGlobal[i] >= limitGridInput)
+         else if (magicDetail.totalPosition >= limitGridInput)
          {
-            if (askPrice >= GetSLByMagic3(magic3))
+            if (askPrice >= GetSLByMagicDetail(magicDetail))
             {
-               CloseAllPositionByMagic3(magic3);
+               CloseAllPositionByMagic3(magicDetail.magic3);
             }
          }
       }

@@ -7,6 +7,7 @@
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/bot-dca/common/TakeProfitAction.mqh>
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/bot-dca/common/RemoveOrderAction.mqh>
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/bot-dca/common/ModifyPositionTPSLAction.mqh>
+#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/bot-dca/common/MagicDetailObject.mqh>
 
 // Input
 extern int magic2Input;
@@ -18,12 +19,7 @@ extern int totalMagicInput;
 bool isHasRunOnceGlobal = false;
 int magic1Global = 666;
 
-int magic3ArrGlobal[];
-double slAmountArrGlobal[];
-double priceStartArrGlobal[];
-string takeProfitCurrentArrGlobal[];
-string takeProfitStartArrGlobal[];
-int totalPositionArrGlobal[];
+MagicDetailObject magicDetailArrGlobal[];
 
 // Constants
 int DELAY_SECOND_CONSTANT = 10;
@@ -76,30 +72,31 @@ void MainFunction()
 
 void RefreshGlobalVariable()
 {
-    SetMagic3Arr();
-    SetTotalPositionArr();
-    SetMagicDependentArr();
+    SetMagicDetailArr();
 }
 
-void SetTotalPositionArr()
+void SetMagicDetailArr()
 {
-    int sizeNew = ArraySize(magic3ArrGlobal);
-    ArrayResize(totalPositionArrGlobal, sizeNew);
+    MagicDetailObject magicDetailArrNew[];
 
-    for (int i = 0; i < sizeNew; i++)
+    SetValueForMagicDetail(magicDetailArrNew);
+
+    for (int i = 0; i < ArraySize(magicDetailArrNew); i++)
     {
-        int magic3 = magic3ArrGlobal[i];
-        int totalPositionNew = GetTotalPositionByMagic3(magic3);
-        if (totalPositionArrGlobal[i] != totalPositionNew)
+        MagicDetailObject magicDetailNew = magicDetailArrNew[i];
+        MagicDetailObject magicDetailOld = GetMagicDetailByMagic3(magicDetailArrGlobal, magicDetailNew.magic3);
+
+        if (magicDetailOld.totalPosition > 0 && magicDetailOld.totalPosition > magicDetailNew.totalPosition)
         {
-            if (totalPositionArrGlobal[i] > 0 && totalPositionArrGlobal[i] > totalPositionNew)
-            {
-                Print("Magic 3: ", magic3, " - Close all position.");
-                CloseAllPositionByMagic3(magic3);
-                totalPositionNew = 0;
-            }
-            totalPositionArrGlobal[i] = totalPositionNew;
-            Print("Magic 3: ", magic3, " - Total position: ", totalPositionNew);
+            Print("Magic 3: ", magicDetailNew.magic3, " - Close all position.");
+            CloseAllPositionByMagic3(magicDetailNew.magic3);
+            magicDetailNew.totalPosition = 0;
         }
+    }
+
+    if (!IsEqualArrMagicDetail(magicDetailArrGlobal, magicDetailArrNew))
+    {
+        CopyArrMagicDetail(magicDetailArrNew, magicDetailArrGlobal);
+        ArrayPrint(magicDetailArrGlobal);
     }
 }

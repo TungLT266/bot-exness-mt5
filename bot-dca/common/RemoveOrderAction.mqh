@@ -3,14 +3,16 @@
 
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/bot-dca/common/CommonFunction.mqh>
 
+extern MagicDetailObject magicDetailArrGlobal[];
+
 void RemoveOrderAction()
 {
-   for (int i = 0; i < ArraySize(magic3ArrGlobal); i++)
+   for (int i = 0; i < ArraySize(magicDetailArrGlobal); i++)
    {
-      int magic3 = magic3ArrGlobal[i];
-      if (GetTotalPositionByMagic3(magic3) == 0)
+      MagicDetailObject magicDetail = magicDetailArrGlobal[i];
+      if (GetTotalPositionByMagic3(magicDetail.magic3) == 0)
       {
-         RemoveOrderByMagic3(magic3);
+         RemoveOrderByMagic3(magicDetail.magic3);
       }
    }
 }

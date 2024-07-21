@@ -6,38 +6,35 @@
 
 extern int limitGridInput;
 
-extern int magic3ArrGlobal[];
-extern string takeProfitCurrentArrGlobal[];
-extern string takeProfitStartArrGlobal[];
-extern int totalPositionArrGlobal[];
+extern MagicDetailObject magicDetailArrGlobal[];
 
 void ModifyPositionTPSLAction()
 {
-   for (int i = 0; i < ArraySize(magic3ArrGlobal); i++)
+   for (int i = 0; i < ArraySize(magicDetailArrGlobal); i++)
    {
-      ModifyPositionTPSLByMagicOrdinal(i);
+      MagicDetailObject magicDetail = magicDetailArrGlobal[i];
+      ModifyPositionTPSLByMagicDetail(magicDetail);
    }
 }
 
-void ModifyPositionTPSLByMagicOrdinal(int magicOrdinal)
+void ModifyPositionTPSLByMagicDetail(MagicDetailObject &magicDetail)
 {
-   int magic3 = magic3ArrGlobal[magicOrdinal];
-   double tpNew = GetTPByMagic3(magic3);
-   double slNew = GetSLByMagic3(magic3);
+   double tpNew = GetTPByMagicDetail(magicDetail);
+   double slNew = GetSLByMagicDetail(magicDetail);
 
    for (int i = 0; i < PositionsTotal(); i++)
    {
       ulong positionTicket = PositionGetTicket(i);
       ulong magic = PositionGetInteger(POSITION_MAGIC);
-      if (IsCorrectMagicByMagic3(magic, magic3))
+      if (IsCorrectMagicByMagic3(magic, magicDetail.magic3))
       {
          ENUM_POSITION_TYPE type = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
          double tp = PositionGetDouble(POSITION_TP);
          double sl = PositionGetDouble(POSITION_SL);
 
-         if (totalPositionArrGlobal[magicOrdinal] >= limitGridInput)
+         if (magicDetail.totalPosition >= limitGridInput)
          {
-            if (takeProfitStartArrGlobal[magicOrdinal] == takeProfitCurrentArrGlobal[magicOrdinal])
+            if (magicDetail.takeProfitStart == magicDetail.takeProfitCurrent)
             {
                if (CompareDouble(tp, tpNew) != 0 || CompareDouble(sl, slNew) != 0)
                {
@@ -54,7 +51,7 @@ void ModifyPositionTPSLByMagicOrdinal(int magicOrdinal)
          }
          else
          {
-            if (takeProfitStartArrGlobal[magicOrdinal] == takeProfitCurrentArrGlobal[magicOrdinal])
+            if (magicDetail.takeProfitStart == magicDetail.takeProfitCurrent)
             {
                if (CompareDouble(tp, tpNew) != 0 || CompareDouble(sl, 0) != 0)
                {

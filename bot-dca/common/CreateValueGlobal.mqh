@@ -2,48 +2,41 @@
 #property link "https://www.mql5.com"
 
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/bot-dca/common/CommonFunction.mqh>
+#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/bot-dca/common/MagicDetailObject.mqh>
 
-extern bool isTradeBuyFirstInput;
 extern double slAmountInput;
-
-extern int magic3ArrGlobal[];
-extern double slAmountArrGlobal[];
-extern double priceStartArrGlobal[];
-extern string takeProfitCurrentArrGlobal[];
-extern string takeProfitStartArrGlobal[];
-extern int totalPositionArrGlobal[];
 
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
 extern string UNKNOWN_CONSTANT;
 
-void SetMagicDependentArr()
+void SetValueForMagicDetail(MagicDetailObject &magicDetailArrNew[])
 {
-   SetSLAmountArr();
-   SetPriceStartArr();
-   SetTakeProfitCurrentArr();
-   SetTakeProfitStartArr();
-}
-
-void SetTakeProfitStartArr()
-{
-   int sizeNew = ArraySize(magic3ArrGlobal);
-   ArrayResize(takeProfitStartArrGlobal, sizeNew);
-
-   for (int i = 0; i < sizeNew; i++)
+   for (int i = 0; i < PositionsTotal(); i++)
    {
-      string takeProfitStartNew = GetTakeProfitStartByMagicOrdinal(i);
-      if (takeProfitStartArrGlobal[i] != takeProfitStartNew)
+      ulong positionTicket = PositionGetTicket(i);
+      ulong magic = PositionGetInteger(POSITION_MAGIC);
+      if (IsCorrectMagic(magic))
       {
-         takeProfitStartArrGlobal[i] = takeProfitStartNew;
-         Print("Magic 3: ", magic3ArrGlobal[i], " - Take profit start: ", takeProfitStartNew);
+         int magic3 = GetMagic3ByMagic(magic);
+         if (!IsExitsMagicDetailByMagic3(magicDetailArrNew, magic3))
+         {
+            MagicDetailObject magicDetailNew = GetDefaultMagicDetailObject();
+            magicDetailNew.magic3 = magic3;
+            magicDetailNew.totalPosition = GetTotalPositionByMagic3(magic3);
+            SetSLAmountByMagicDetail(magicDetailNew);
+            magicDetailNew.priceStart = GetPriceStartByMagic3(magic3);
+            magicDetailNew.takeProfitCurrent = GetTakeProfitCurrentByMagic3(magic3);
+            magicDetailNew.takeProfitStart = GetTakeProfitStartByMagic3(magic3);
+
+            AddArrValueMagicDetail(magicDetailArrNew, magicDetailNew);
+         }
       }
    }
 }
 
-string GetTakeProfitStartByMagicOrdinal(int magicOrdinal)
+string GetTakeProfitStartByMagic3(int magic3)
 {
-   int magic3 = magic3ArrGlobal[magicOrdinal];
    for (int i = 0; i < PositionsTotal(); i++)
    {
       ulong positionTicket = PositionGetTicket(i);
@@ -66,25 +59,8 @@ string GetTakeProfitStartByMagicOrdinal(int magicOrdinal)
    return UNKNOWN_CONSTANT;
 }
 
-void SetTakeProfitCurrentArr()
+string GetTakeProfitCurrentByMagic3(int magic3)
 {
-   int sizeNew = ArraySize(magic3ArrGlobal);
-   ArrayResize(takeProfitCurrentArrGlobal, sizeNew);
-
-   for (int i = 0; i < sizeNew; i++)
-   {
-      string takeProfitCurrentNew = GetTakeProfitCurrentByMagicOrdinal(i);
-      if (takeProfitCurrentArrGlobal[i] != takeProfitCurrentNew)
-      {
-         takeProfitCurrentArrGlobal[i] = takeProfitCurrentNew;
-         Print("Magic 3: ", magic3ArrGlobal[i], " - Take profit current: ", takeProfitCurrentNew);
-      }
-   }
-}
-
-string GetTakeProfitCurrentByMagicOrdinal(int magicOrdinal)
-{
-   int magic3 = magic3ArrGlobal[magicOrdinal];
    int gridNoMax = 0;
    ENUM_POSITION_TYPE positionTypeAtGridMax = POSITION_TYPE_BUY;
    for (int i = 0; i < PositionsTotal(); i++)
@@ -114,25 +90,8 @@ string GetTakeProfitCurrentByMagicOrdinal(int magicOrdinal)
    return UNKNOWN_CONSTANT;
 }
 
-void SetPriceStartArr()
+double GetPriceStartByMagic3(int magic3)
 {
-   int sizeNew = ArraySize(magic3ArrGlobal);
-   ArrayResize(priceStartArrGlobal, sizeNew);
-
-   for (int i = 0; i < sizeNew; i++)
-   {
-      double priceStartNew = GetPriceStartByMagicOrdinal(i);
-      if (priceStartArrGlobal[i] != priceStartNew)
-      {
-         priceStartArrGlobal[i] = priceStartNew;
-         Print("Magic 3: ", magic3ArrGlobal[i], " - Price start: ", priceStartNew);
-      }
-   }
-}
-
-double GetPriceStartByMagicOrdinal(int magicOrdinal)
-{
-   int magic3 = magic3ArrGlobal[magicOrdinal];
    for (int i = 0; i < PositionsTotal(); i++)
    {
       ulong positionTicket = PositionGetTicket(i);
@@ -148,36 +107,20 @@ double GetPriceStartByMagicOrdinal(int magicOrdinal)
    return 0;
 }
 
-void SetSLAmountArr()
+void SetSLAmountByMagicDetail(MagicDetailObject &magicDetail)
 {
-   int sizeNew = ArraySize(magic3ArrGlobal);
-   ArrayResize(slAmountArrGlobal, sizeNew);
-
-   for (int i = 0; i < sizeNew; i++)
+   if (magicDetail.totalPosition <= 1)
    {
-      double slAmountNew = GetSLAmountByMagicOrdinal(i);
-      if (slAmountArrGlobal[i] != slAmountNew)
-      {
-         slAmountArrGlobal[i] = slAmountNew;
-         Print("Magic 3: ", magic3ArrGlobal[i], " - SL Amount: ", slAmountNew);
-      }
-   }
-}
-
-double GetSLAmountByMagicOrdinal(int magicOrdinal)
-{
-   if (totalPositionArrGlobal[magicOrdinal] <= 1)
-   {
-      return slAmountInput;
+      magicDetail.slAmount = slAmountInput;
+      return;
    }
 
-   int magic3 = magic3ArrGlobal[magicOrdinal];
    double priceAtGrid1 = 0;
    double priceAtGrid2 = 0;
    for (int i = 0; i < PositionsTotal(); i++)
    {
       ulong positionTicket = PositionGetTicket(i);
-      if (IsCorrectMagicByMagic3(PositionGetInteger(POSITION_MAGIC), magic3))
+      if (IsCorrectMagicByMagic3(PositionGetInteger(POSITION_MAGIC), magicDetail.magic3))
       {
          int gridNo = GetGridNoByComment(PositionGetString(POSITION_COMMENT));
          if (gridNo == 1)
@@ -192,38 +135,8 @@ double GetSLAmountByMagicOrdinal(int magicOrdinal)
    }
    if (CompareDouble(priceAtGrid1, 0) > 0 && CompareDouble(priceAtGrid2, 0) > 0)
    {
-      return MathAbs(priceAtGrid1 - priceAtGrid2);
+      magicDetail.slAmount = MathAbs(priceAtGrid1 - priceAtGrid2);
+      return;
    }
-   return slAmountInput;
-}
-
-void SetMagic3Arr()
-{
-   int magic3ArrNew[];
-
-   int totalPosition = PositionsTotal();
-   for (int i = 0; i < totalPosition; i++)
-   {
-      ulong positionTicket = PositionGetTicket(i);
-      ulong magic = PositionGetInteger(POSITION_MAGIC);
-      if (IsCorrectMagic(magic))
-      {
-         int magic3 = GetMagic3ByMagic(magic);
-         if (!IsContainsValueInt(magic3ArrNew, magic3))
-         {
-            AddArrValueInt(magic3ArrNew, magic3);
-         }
-      }
-   }
-
-   if (!IsEqualArrInt(magic3ArrGlobal, magic3ArrNew))
-   {
-      CopyArrInt(magic3ArrNew, magic3ArrGlobal);
-      string magic3Str = "";
-      for (int i = 0; i < ArraySize(magic3ArrGlobal); i++)
-      {
-         magic3Str += IntegerToString(magic3ArrGlobal[i]) + ", ";
-      }
-      Print("Magic 3: ", StringSubstr(magic3Str, 0, StringLen(magic3Str) - 2));
-   }
+   magicDetail.slAmount = slAmountInput;
 }

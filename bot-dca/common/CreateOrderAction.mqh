@@ -2,22 +2,21 @@
 #property link "https://www.mql5.com"
 
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/bot-dca/common/CommonFunction.mqh>
+#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/bot-dca/common/MagicDetailObject.mqh>
 
 extern double volumeInput;
 extern int limitGridInput;
 extern int totalMagicInput;
 extern bool isTradeBuyFirstInput;
 
-extern int magic3ArrGlobal[];
-extern string takeProfitCurrentArrGlobal[];
-extern int totalPositionArrGlobal[];
+extern MagicDetailObject magicDetailArrGlobal[];
 
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
 
 void CreateOrderAction()
 {
-   if (ArraySize(magic3ArrGlobal) < totalMagicInput)
+   if (ArraySize(magicDetailArrGlobal) < totalMagicInput)
    {
       CreateOrderFirst();
       return;
@@ -27,15 +26,14 @@ void CreateOrderAction()
 
 void CreateOrderAfterFirst()
 {
-   for (int i = 0; i < ArraySize(magic3ArrGlobal); i++)
+   for (int i = 0; i < ArraySize(magicDetailArrGlobal); i++)
    {
-      int totalPosition = totalPositionArrGlobal[i];
-      if (totalPosition > 0 && totalPosition < limitGridInput)
+      MagicDetailObject magicDetail = magicDetailArrGlobal[i];
+      if (magicDetail.totalPosition > 0 && magicDetail.totalPosition < limitGridInput)
       {
-         int magic3 = magic3ArrGlobal[i];
-         if (GetTotalOrderByMagic3(magic3) == 0)
+         if (GetTotalOrderByMagic3(magicDetail.magic3) == 0)
          {
-            CreateOrder(totalPosition + 1, magic3);
+            CreateOrder(magicDetail.totalPosition + 1, magicDetail);
          }
       }
    }
@@ -43,13 +41,13 @@ void CreateOrderAfterFirst()
 
 int GetMagic3OrderFirst()
 {
-   if (ArraySize(magic3ArrGlobal) == 0)
+   if (ArraySize(magicDetailArrGlobal) == 0)
    {
       return 1;
    }
    for (int i = 1; i <= 9; i++)
    {
-      if (GetMagicOrdinalByMagic3(i) < 0)
+      if (!IsExitsMagicDetailByMagic3(magicDetailArrGlobal, i))
       {
          return i;
       }
@@ -98,10 +96,10 @@ void CreateOrderFirst()
    }
 }
 
-void CreateOrder(int gridNo, int magic3)
+void CreateOrder(int gridNo, MagicDetailObject &magicDetail)
 {
-   ulong magic = GetMagicNumber(magic3);
-   ENUM_ORDER_TYPE orderType = GetTypeOrderByMagic3(magic3);
+   ulong magic = GetMagicNumber(magicDetail.magic3);
+   ENUM_ORDER_TYPE orderType = GetTypeOrderByMagic3(magicDetail.takeProfitCurrent);
 
    MqlTradeRequest request;
    MqlTradeResult result;
@@ -109,9 +107,9 @@ void CreateOrder(int gridNo, int magic3)
    ZeroMemory(request);
    request.action = TRADE_ACTION_PENDING;
    request.symbol = _Symbol;
-   request.volume = GetVolumeOrderByMagic3(magic3);
+   request.volume = GetVolumeOrderByMagic3(magicDetail.magic3);
    request.type = orderType;
-   request.price = GetSLByMagic3(magic3);
+   request.price = GetSLByMagicDetail(magicDetail);
    request.comment = IntegerToString(gridNo);
    request.magic = magic;
 
@@ -125,10 +123,9 @@ void CreateOrder(int gridNo, int magic3)
    }
 }
 
-ENUM_ORDER_TYPE GetTypeOrderByMagic3(int magic3)
+ENUM_ORDER_TYPE GetTypeOrderByMagic3(string takeProfitCurrent)
 {
-   int magicOrdinal = GetMagicOrdinalByMagic3(magic3);
-   if (takeProfitCurrentArrGlobal[magicOrdinal] == BUY_TYPE_CONSTANT)
+   if (takeProfitCurrent == BUY_TYPE_CONSTANT)
    {
       return ORDER_TYPE_SELL_STOP;
    }
