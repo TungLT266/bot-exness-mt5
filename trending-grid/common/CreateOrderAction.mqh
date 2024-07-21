@@ -70,11 +70,13 @@ void createOrder(int gridNo, string typeStr)
    }
 
    ENUM_ORDER_TYPE type;
+   double tp;
 
    double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
    double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
    if (typeStr == BUY_TYPE_CONSTANT)
    {
+      tp = price + gridAmountInput;
       if (CompareDouble(price, askPrice) > 0)
       {
          type = ORDER_TYPE_BUY_STOP;
@@ -86,6 +88,7 @@ void createOrder(int gridNo, string typeStr)
    }
    else if (typeStr == SELL_TYPE_CONSTANT)
    {
+      tp = price - gridAmountInput;
       if (CompareDouble(price, bidPrice) < 0)
       {
          type = ORDER_TYPE_SELL_STOP;
@@ -115,6 +118,7 @@ void createOrder(int gridNo, string typeStr)
    request.symbol = _Symbol;
    request.volume = volumeInput;
    request.type = type;
+   request.tp = tp;
    request.price = price;
    request.comment = IntegerToString(gridNo);
    request.magic = magicNoGlobal;
