@@ -4,6 +4,7 @@
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trending-grid/common/CreateValueGlobal.mqh>
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trending-grid/common/CommonFunction.mqh>
 #include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trending-grid/common/CreateOrderAction.mqh>
+#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/trending-grid/common/RemoveOrderAction.mqh>
 
 // Input
 extern double priceCenterInput;
@@ -17,6 +18,9 @@ extern int magic2Input;
 int magic1Global = 111;
 double priceStartGridGlobal = 0;
 ulong magicNoGlobal = 0;
+int gridNoCurrentGlobal = 0;
+double volumeBuyTotalGlobal = 0;
+double volumeSellTotalGlobal = 0;
 
 // Constants
 int DELAY_SECOND_CONSTANT = 30;
@@ -39,7 +43,19 @@ int OnInitFunction()
 
 void MainFunction()
 {
+    int gridNoCurrentNew = GetGridNoCurrent();
+    if (gridNoCurrentNew <= 0)
+    {
+        return;
+    }
+    if (gridNoCurrentGlobal != gridNoCurrentNew)
+    {
+        gridNoCurrentGlobal = gridNoCurrentNew;
+        Print("Grid no current: ", gridNoCurrentGlobal);
+    }
+
     RefreshGlobalVariable();
+    RemoveOrderAction();
     CreateOrderAction();
 }
 

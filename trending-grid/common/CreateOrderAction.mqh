@@ -7,21 +7,69 @@ extern int totalGridInput;
 extern double volumeInput;
 
 extern ulong magicNoGlobal;
+extern int gridNoCurrentGlobal;
+extern double volumeBuyTotalGlobal;
+extern double volumeSellTotalGlobal;
 
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
 
 void CreateOrderAction()
 {
-   for (int i = 1; i <= totalGridInput; i++)
+   if (CompareDouble(volumeBuyTotalGlobal, volumeSellTotalGlobal) > 0)
    {
-      createOrder(i, BUY_TYPE_CONSTANT);
-      createOrder(i, SELL_TYPE_CONSTANT);
+      CreateOrderForDifferenceVolume(SELL_TYPE_CONSTANT);
+   }
+   else if (CompareDouble(volumeBuyTotalGlobal, volumeSellTotalGlobal) < 0)
+   {
+      CreateOrderForDifferenceVolume(BUY_TYPE_CONSTANT);
+   }
+   else
+   {
+      CreateOrder(GetGridNoUp(BUY_TYPE_CONSTANT), BUY_TYPE_CONSTANT, volumeInput);
+      CreateOrder(GetGridNoDown(BUY_TYPE_CONSTANT), BUY_TYPE_CONSTANT, volumeInput);
+      CreateOrder(GetGridNoUp(SELL_TYPE_CONSTANT), SELL_TYPE_CONSTANT, volumeInput);
+      CreateOrder(GetGridNoDown(SELL_TYPE_CONSTANT), SELL_TYPE_CONSTANT, volumeInput);
    }
 }
 
-bool IsExistGridNo(double priceGrid, string typeStr)
+void CreateOrderForDifferenceVolume(string typeStr)
 {
+   double differenceVolume = MathAbs(volumeBuyTotalGlobal - volumeSellTotalGlobal);
+   int gridNoUp = GetGridNoUp(typeStr);
+   int gridNoDown = GetGridNoDown(typeStr);
+   if (CompareDouble(differenceVolume, volumeInput) > 0)
+   {
+      if (gridNoUp == gridNoCurrentGlobal + 1)
+      {
+         CreateOrder(gridNoUp, typeStr, differenceVolume);
+      }
+      else
+      {
+         CreateOrder(gridNoCurrentGlobal + 1, typeStr, differenceVolume - volumeInput);
+         CreateOrder(gridNoUp, typeStr, volumeInput);
+      }
+
+      if (gridNoDown == gridNoCurrentGlobal)
+      {
+         CreateOrder(gridNoDown, typeStr, differenceVolume);
+      }
+      else
+      {
+         CreateOrder(gridNoCurrentGlobal, typeStr, differenceVolume - volumeInput);
+         CreateOrder(gridNoDown, typeStr, volumeInput);
+      }
+   }
+   else
+   {
+      CreateOrder(gridNoUp, typeStr, volumeInput);
+      CreateOrder(gridNoDown, typeStr, volumeInput);
+   }
+}
+
+bool IsExistGridNo(int gridNo, string typeStr)
+{
+   double priceGrid = GetPriceByGridNo(gridNo);
    double min = GetPriceMinGrid(priceGrid);
    double max = GetPriceMaxGrid(priceGrid);
 
@@ -42,33 +90,17 @@ bool IsExistGridNo(double priceGrid, string typeStr)
       }
    }
 
-   for (int i = 0; i < PositionsTotal(); i++)
-   {
-      ulong ticket = PositionGetTicket(i);
-      if (PositionGetInteger(POSITION_MAGIC) == magicNoGlobal)
-      {
-         ENUM_POSITION_TYPE type = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
-         if (GetPositionTypeStr(type) == typeStr)
-         {
-            double price = PositionGetDouble(POSITION_PRICE_OPEN);
-            if (price > min && price < max)
-            {
-               return true;
-            }
-         }
-      }
-   }
-   return false;
+   return IsExistGridNoInPosition(gridNo, typeStr);
 }
 
-void createOrder(int gridNo, string typeStr)
+void CreateOrder(int gridNo, string typeStr, double volume)
 {
-   double price = GetPriceByGridNo(gridNo);
-   if (IsExistGridNo(price, typeStr))
+   if (IsExistGridNo(gridNo, typeStr))
    {
       return;
    }
 
+   double price = GetPriceByGridNo(gridNo);
    ENUM_ORDER_TYPE type;
    double tp;
    double sl;
@@ -119,7 +151,7 @@ void createOrder(int gridNo, string typeStr)
    ZeroMemory(request);
    request.action = TRADE_ACTION_PENDING;
    request.symbol = _Symbol;
-   request.volume = volumeInput;
+   request.volume = volume;
    request.type = type;
    request.tp = tp;
    request.sl = sl;
@@ -129,10 +161,10 @@ void createOrder(int gridNo, string typeStr)
 
    if (OrderSend(request, result))
    {
-      Print("Create order success: Type: ", EnumToString(type), " - Ticket: ", result.order, " - Grid No: ", gridNo, " - Price: ", price, " - TP: ", tp, " - SL: ", sl);
+      Print("Create order success: Type: ", EnumToString(type), " - Ticket: ", result.order, " - Grid No: ", gridNo, " - Price: ", price, " - TP: ", tp, " - SL: ", sl, " - Volume: ", volume);
    }
    else
    {
-      Print("Create order failure: Type: ", EnumToString(type), " - Comment: ", result.comment, " - Grid No: ", gridNo, " - Price: ", price, " - TP: ", tp, " - SL: ", sl);
+      Print("Create order failure: Type: ", EnumToString(type), " - Comment: ", result.comment, " - Grid No: ", gridNo, " - Price: ", price, " - TP: ", tp, " - SL: ", sl, " - Volume: ", volume);
    }
 }

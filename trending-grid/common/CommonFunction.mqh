@@ -9,6 +9,7 @@ extern int totalGridInput;
 extern int magic1Global;
 extern ulong magicNoGlobal;
 extern double priceStartGridGlobal;
+extern int gridNoCurrentGlobal;
 
 extern string BUY_TYPE_CONSTANT;
 extern string SELL_TYPE_CONSTANT;
@@ -122,4 +123,72 @@ double GetSLUp()
 double GetSLDown()
 {
     return priceStartGridGlobal - slGridAmountInput;
+}
+
+bool IsExistGridNoInPosition(int gridNo, string typeStr)
+{
+    double priceGrid = GetPriceByGridNo(gridNo);
+    double min = GetPriceMinGrid(priceGrid);
+    double max = GetPriceMaxGrid(priceGrid);
+
+    int totalPosition = PositionsTotal();
+    for (int i = 0; i < totalPosition; i++)
+    {
+        ulong positionTicket = PositionGetTicket(i);
+        if (PositionGetInteger(POSITION_MAGIC) == magicNoGlobal)
+        {
+            ENUM_POSITION_TYPE type = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+            if (GetPositionTypeStr(type) == typeStr)
+            {
+                double price = PositionGetDouble(POSITION_PRICE_OPEN);
+                if (price > min && price < max)
+                {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+int GetGridNoUp(string typeStr)
+{
+    for (int i = gridNoCurrentGlobal + 1; i <= totalGridInput; i++)
+    {
+        if (!IsExistGridNoInPosition(i, typeStr))
+        {
+            return i;
+        }
+    }
+    return 0;
+}
+
+int GetGridNoDown(string typeStr)
+{
+    for (int i = gridNoCurrentGlobal; i >= 1; i--)
+    {
+        if (!IsExistGridNoInPosition(i, typeStr))
+        {
+            return i;
+        }
+    }
+    return 0;
+}
+
+int GetGridNoByPrice(double price)
+{
+    return (int)MathFloor((price - priceStartGridGlobal + gridAmountInput) / gridAmountInput);
+}
+
+string GetTypeOrderStrByType(ENUM_ORDER_TYPE type)
+{
+    if (type == ORDER_TYPE_BUY_LIMIT || type == ORDER_TYPE_BUY_STOP)
+    {
+        return BUY_TYPE_CONSTANT;
+    }
+    else if (type == ORDER_TYPE_SELL_LIMIT || type == ORDER_TYPE_SELL_STOP)
+    {
+        return SELL_TYPE_CONSTANT;
+    }
+    return "";
 }
