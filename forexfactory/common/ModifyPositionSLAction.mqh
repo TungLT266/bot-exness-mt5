@@ -9,8 +9,7 @@ extern ulong magicGlobal;
 
 void ModifyPositionSLAction()
 {
-   int total = PositionsTotal();
-   for (int i = 0; i < total; i++)
+   for (int i = 0; i < PositionsTotal(); i++)
    {
       ulong positionTicket = PositionGetTicket(i);
       if (PositionGetInteger(POSITION_MAGIC) == magicGlobal)

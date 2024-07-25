@@ -35,3 +35,18 @@ int GetTotalOrder()
     }
     return result;
 }
+
+int GetTotalPosition()
+{
+    int result = 0;
+    int totalPosition = PositionsTotal();
+    for (int i = 0; i < totalPosition; i++)
+    {
+        ulong positionTicket = PositionGetTicket(i);
+        if (PositionGetInteger(POSITION_MAGIC) == magicGlobal)
+        {
+            result++;
+        }
+    }
+    return result;
+}
