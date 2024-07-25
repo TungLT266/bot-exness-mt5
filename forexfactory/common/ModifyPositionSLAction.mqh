@@ -1,73 +1,74 @@
 #property copyright "Copyright 2024, MetaQuotes Ltd."
-#property link      "https://www.mql5.com"
+#property link "https://www.mql5.com"
 
-extern double stopPriceSLRateInput;
+#include <C:/Users/admin/AppData/Roaming/MetaQuotes/Terminal/53785E099C927DB68A545C249CDBCE06/MQL5/Experts/bot-ea/forexfactory/common/CommonFunction.mqh>
 
-ulong positionTicket;
-ENUM_POSITION_TYPE positionType;
-double tpOld;
-double slOld;
-double positionPrice;
+extern double slAmountInput;
 
-void ModifyPositionSLAction(double bidPrice, double askPrice) {
+extern ulong magicGlobal;
+
+void ModifyPositionSLAction()
+{
    int total = PositionsTotal();
-   for (int i = 0; i < total; i++) {
-      positionTicket = PositionGetTicket(i);
-      positionType = (ENUM_POSITION_TYPE) PositionGetInteger(POSITION_TYPE);
-      tpOld = PositionGetDouble(POSITION_TP);
-      slOld = PositionGetDouble(POSITION_SL);
-      positionPrice = PositionGetDouble(POSITION_PRICE_OPEN);
-      
-      ModifyPositionSL(bidPrice, askPrice);
+   for (int i = 0; i < total; i++)
+   {
+      ulong positionTicket = PositionGetTicket(i);
+      if (PositionGetInteger(POSITION_MAGIC) == magicGlobal)
+      {
+         ModifyPositionSL(positionTicket);
+      }
    }
 }
 
-double GetSLNewForBuy(double bidPrice) {
-   if (bidPrice >= (positionPrice + (stopPriceSLRateInput * 3))) {
-      if (slOld < (positionPrice + stopPriceSLRateInput)) {
-         return positionPrice + stopPriceSLRateInput;
-      }
-   } else if (bidPrice >= (positionPrice + stopPriceSLRateInput)) {
-      if (slOld < positionPrice) {
-         return positionPrice;
-      }
-   } else if (bidPrice >= positionPrice) {
-      if (slOld < (positionPrice - stopPriceSLRateInput)) {
-         return positionPrice - stopPriceSLRateInput;
-      }
+double GetSLNewForBuy(double priceOpen)
+{
+   double bidPrice = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   if (bidPrice >= (priceOpen + slAmountInput))
+   {
+      return priceOpen;
    }
-   return slOld;
+   else if (bidPrice >= priceOpen)
+   {
+      return priceOpen - slAmountInput;
+   }
+   return 0;
 }
 
-double GetSLNewForSell(double askPrice) {
-   if (askPrice <= (positionPrice - (stopPriceSLRateInput * 3))) {
-      if (slOld > (positionPrice - stopPriceSLRateInput)) {
-         return positionPrice - stopPriceSLRateInput;
-      }
-   } else if (askPrice <= (positionPrice - stopPriceSLRateInput)) {
-      if (slOld > positionPrice) {
-         return positionPrice;
-      }
-   } else if (askPrice <= positionPrice) {
-      if (slOld > (positionPrice + stopPriceSLRateInput)) {
-         return positionPrice + stopPriceSLRateInput;
-      }
+double GetSLNewForSell(double priceOpen)
+{
+   double askPrice = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+   if (askPrice <= (priceOpen - slAmountInput))
+   {
+      return priceOpen;
    }
-   return slOld;
+   else if (askPrice <= priceOpen)
+   {
+      return priceOpen + slAmountInput;
+   }
+   return 0;
 }
 
-void ModifyPositionSL(double bidPrice, double askPrice) {
-   double slNew = slOld;
-   if (positionType == POSITION_TYPE_BUY) {
-      slNew = GetSLNewForBuy(bidPrice);
-   } else if (positionType == POSITION_TYPE_SELL) {
-      slNew = GetSLNewForSell(askPrice);
+void ModifyPositionSL(ulong positionTicket)
+{
+   ENUM_POSITION_TYPE positionType = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+   double slOld = PositionGetDouble(POSITION_SL);
+   double positionPrice = PositionGetDouble(POSITION_PRICE_OPEN);
+
+   double slNew;
+   if (positionType == POSITION_TYPE_BUY)
+   {
+      slNew = GetSLNewForBuy(positionPrice);
    }
-   
-   if (slNew == slOld) {
+   else
+   {
+      slNew = GetSLNewForSell(positionPrice);
+   }
+
+   if (CompareDouble(slNew, 0) == 0 || CompareDouble(slNew, slOld) == 0)
+   {
       return;
    }
-   
+
    MqlTradeRequest request;
    MqlTradeResult result;
 
@@ -77,11 +78,14 @@ void ModifyPositionSL(double bidPrice, double askPrice) {
    request.position = positionTicket;
    request.symbol = _Symbol;
    request.sl = slNew;
-   request.tp = tpOld;
-   
-   if (OrderSend(request, result)) {
-      Print("Modify SL Success: Type: ", EnumToString(positionType), " - Ticket: ", positionTicket, " - SL New: ", slNew, " - SL Old: ", slOld);
-   } else {
-      Print("Modify SL Error: Type: ", EnumToString(positionType), " - Ticket: ", positionTicket, " - Comment: ", result.comment);
+   request.tp = PositionGetDouble(POSITION_TP);
+
+   if (OrderSend(request, result))
+   {
+      Print("Modify SL success: Type: ", EnumToString(positionType), " - Ticket: ", positionTicket, " - SL New: ", slNew, " - SL Old: ", slOld);
+   }
+   else
+   {
+      Print("Modify SL failure: Type: ", EnumToString(positionType), " - Ticket: ", positionTicket, " - Comment: ", result.comment);
    }
 }
